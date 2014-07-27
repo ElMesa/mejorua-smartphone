@@ -1,0 +1,8 @@
+body {
+  padding-top: 70px;
+  padding-bottom: 10px;
+}
+
+html, body, .row, .container, .fill {
+    height: 100%;
+}

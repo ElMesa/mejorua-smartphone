@@ -1,119 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MejorUA.webapp v1</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>MejorUA.webapp v1</title>
 
-<!-- Bootstrap -->
-<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap -->
+	<link href="css/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+	<link href="css/libs/bootstrap/bootstrap-theme.min.css" rel="stylesheet">
 
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
+	<!-- Leaflet Maps -->
+	<link href="css/libs/leaflet-0.7.3.css" rel="stylesheet">
+
+	<!-- MejorUA CSS -->
+	<link href="css/master.css" rel="stylesheet">
+	<link href="css/header.css" rel="stylesheet">
+	<link href="css/map.css" rel="stylesheet">
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
+
 <body>
 
-	<div class="col-sm-offset-1 col-sm-10">
+	<!---------------------------------------------------------------------------------------------------------------------------
 
-		<h1>MejorUA.webapp v1 1</h1>
+	NAVBAR
 
-		<h2>Cliente para MejorUA.api v1</h2>
+---------------------------------------------------------------------------------------------------------------------------->
 
-		<br>
-
-		<h3>API URL</h3>
-
-		<div class="from-group">
-			<label for="apiHost">Host</label>
-			<input id="apiHost" type="text" class="form-control" value="10.0.2.2" />
-
-			<a id="btn_setHostLocalhost" class="btn btn-success">Set localhost</a>
-			<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Set 10.0.2.2</a>
+	<!-- Fixed navbar -->
+	<!-- role="navigation" data-role="header" data-position="fixed" -->
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">MejorUA</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li class="active">
+						<a href="#">Home</a>
+					</li>
+					<li>
+						<a href="javascript:pageShowMap()">Mapa</a>
+						<!--<a href="#" onclick="pageShowMap()">Mapa</a>-->
+					</li>
+					<li>
+						<a href="javascript:pageShowRestClient()">REST Client</a>
+						<!--<a href="#" onclick="pageShowRestClient()">REST Client</a>-->
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu" role="menu">
+							<li>
+								<a href="#">Action</a>
+							</li>
+							<li>
+								<a href="#">Another action</a>
+							</li>
+							<li>
+								<a href="#">Something else here</a>
+							</li>
+							<li class="divider"></li>
+							<li class="dropdown-header">Nav header</li>
+							<li>
+								<a href="#">Separated link</a>
+							</li>
+							<li>
+								<a href="#">One more separated link</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="../navbar/">Default</a>
+					</li>
+					<li>
+						<a href="../navbar-static-top/">Static top</a>
+					</li>
+					<li class="active">
+						<a href="./">Fixed top</a>
+					</li>
+				</ul>
+			</div>
+			<!--/.nav-collapse -->
 		</div>
-
-		<div class="from-group">
-			<label for="apiPort">Port</label>
-			<input id="apiPort" type="text" class="form-control" value="8080" />
-		</div>
-
-		<div class="from-group">
-			<label for="apiPath">Path to API</label>
-			<input id="apiPath" type="text" id="apiPath" class="form-control" value="api" />
-		</div>
-
-		<h3>Collection</h3>
-
-		<div class="form-group">
-			<label for="collection">Collección REST</label>
-			<input id="collection" type="text" class="form-control" placeholder="" value="incidencia" disabled>
-		</div>
-
-		<h3>Recuperar Incidencia</h3>
-
-		<form id="fGet" role="form">
-
-			<div class="form-group">
-				<label for="fGet_resourceId">Id Recurso REST</label>
-				<input id="fGet_resourceId" type="text" class="form-control" placeholder="" value="1">
-			</div>
-
-			<a id="fGet_submit" class="btn btn-default">Recuperar incidencia</a>
-		</form>
-
-		<p>Respuesta del API
-		<p>
-			<textarea id="fGet_response"></textarea>
-		<h3>Crear/Modificar Incidencia</h3>
-
-		<form id="fPut" role="form">
-
-			<div class="form-group">
-				<label for="fPut_resourceId">Id</label>
-				<input id="fPut_resourceId" type="text" class="form-control" placeholder="" value="1">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_latitude">Latitud</label>
-				<input id="fPut_latitude" type="text" class="form-control" placeholder="Introduzca la latitud de la incidencia" value="2">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_longitude">Longitud</label>
-				<input id="fPut_longitude" type="text" class="form-control" placeholder="Introduzca la longitud de la incidencia" value="2">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_term">Término</label>
-				<input id="fPut_term" type="text" class="form-control" placeholder="Termino al que se refiere la incidencia" value="2">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_action">Acción</label>
-				<input id="fPut_action" type="text" class="form-control" placeholder="Acción a realizar sobre el término" value="2">
-			</div>
-
-			<a id="fPut_submit" class="btn btn-default">Crear/Modificar incidencia</a>
-		</form>
-
-		<p>Respuesta del API
-		<p>
-			<textarea id="fPut_response"></textarea>
 	</div>
 
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	CONTAINER
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	
+			<div id="pageMap" class="container">
+				<div class="row">
+					<div class="fill col-md-offset-1 col-md-10">
+						<div id="map" class="fill"></div>
+					</div>
+					<!-- /col -->
+				</div>
+				<!-- /row -->
+			</div>
+			<!-- /container -->
+
+			<div id="pageRestClient" class="container">
+				<div class="row">
+					<div class="col-md-offset-1 col-md-10">
+						<h2>Cliente para MejorUA.api v1</h2>
+
+
+						<h3>API URL</h3>
+
+						<div class="from-group">
+							<label for="apiHost">Host</label>
+							<input id="apiHost" type="text" class="form-control" value="10.0.2.2" />
+
+							<a id="btn_setHostLocalhost" class="btn btn-success">Set localhost</a>
+							<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Set 10.0.2.2</a>
+						</div>
+
+						<div class="from-group">
+							<label for="apiPort">Port</label>
+							<input id="apiPort" type="text" class="form-control" value="8080" />
+						</div>
+
+						<div class="from-group">
+							<label for="apiPath">Path to API</label>
+							<input id="apiPath" type="text" id="apiPath" class="form-control" value="api" />
+						</div>
+
+						<h3>Collection</h3>
+
+						<div class="form-group">
+							<label for="collection">Collección REST</label>
+							<input id="collection" type="text" class="form-control" placeholder="" value="incidencia" disabled>
+						</div>
+
+						<h3>Recuperar Incidencia</h3>
+
+						<form id="fGet" role="form">
+
+							<div class="form-group">
+								<label for="fGet_resourceId">Id Recurso REST</label>
+								<input id="fGet_resourceId" type="text" class="form-control" placeholder="" value="1">
+							</div>
+
+							<a id="fGet_submit" class="btn btn-default">Recuperar incidencia</a>
+						</form>
+
+						<p>Respuesta del API</p>
+
+						<pre id="fGet_response"></pre>
+						<h3>Crear/Modificar Incidencia</h3>
+
+						<form id="fPut" role="form">
+
+							<div class="form-group">
+								<label for="fPut_resourceId">Id</label>
+								<input id="fPut_resourceId" type="text" class="form-control" placeholder="" value="1">
+							</div>
+
+							<div class="form-group">
+								<label for="fPut_latitude">Latitud</label>
+								<input id="fPut_latitude" type="text" class="form-control" placeholder="Introduzca la latitud de la incidencia" value="2">
+							</div>
+
+							<div class="form-group">
+								<label for="fPut_longitude">Longitud</label>
+								<input id="fPut_longitude" type="text" class="form-control" placeholder="Introduzca la longitud de la incidencia" value="2">
+							</div>
+
+							<div class="form-group">
+								<label for="fPut_term">Término</label>
+								<input id="fPut_term" type="text" class="form-control" placeholder="Termino al que se refiere la incidencia" value="2">
+							</div>
+
+							<div class="form-group">
+								<label for="fPut_action">Acción</label>
+								<input id="fPut_action" type="text" class="form-control" placeholder="Acción a realizar sobre el término" value="2">
+							</div>
+
+							<a id="fPut_submit" class="btn btn-default">Crear/Modificar incidencia</a>
+						</form>
+
+						<p>Respuesta del API</p>
+						<textarea id="fPut_response"></textarea>
+					</div>
+					<!-- /col -->
+				</div>
+				<!-- /row -->
+			</div>
+
+			<div>
+				<h1>Atributions</h1>
+
+				<div>
+					<h2>Map icon happy</h2>
+					Happy designed by <a href="http://www.thenounproject.com/Julihan">Julien Deveaux</a> from the <a href="http://www.thenounproject.com">Noun Project</a>
+				</div>
+
+			</div>
+			<!-- /container -->
+
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="js/lib/jquery-1.11.0.min.js"></script>
+	<script src="js/libs/jquery-1.11.0.min.js"></script>
+
+	<script src="http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery.effects.core.js"></script>
+	<script src="http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery.effects.slide.js"></script>
 
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="js/lib/bootstrap-3.1.1.min.js"></script>
+	<script src="js/libs/bootstrap-3.1.1.min.js"></script>
 
-	<script src="js/lib/underscore-1.6.0.min.js"></script>
+	<script src="js/libs/underscore-1.6.0.min.js"></script>
 
-	<script src="js/index.js"></script>
+	<script src="js/libs/backbone-1.1.2.min.js"></script>
+
+	<script src="js/libs/leaflet-0.7.3.js"></script>
+
+	<script src="js/models/Issue.js"></script>
+	<script src="js/models/IssueCollection.js"></script>
+	<script src="js/util/Api.js"></script>
+	<script src="js/Map.js"></script>
+	<script src="js/controllers/App.js"></script>
+	<script src="js/controllers/index.js"></script>
+
 
 </body>
+
 </html>
