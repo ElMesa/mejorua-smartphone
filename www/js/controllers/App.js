@@ -4,6 +4,12 @@ mejorua.controllers = mejorua.controllers || {};
 (function() {
 	mejorua.controllers.App = function App() {
 
+	/****************************************************************************************************************
+
+        METHODS
+
+    ****************************************************************************************************************/
+
 	this.init = function init() {
 		console.log("controllers.App.init()");
 
@@ -12,15 +18,19 @@ mejorua.controllers = mejorua.controllers || {};
 		this.api = new mejorua.Api();
 		this.map = new mejorua.Map();
 
-		//this.models.issue = new mejorua.models.Issue();
+		// Backbone Collection - Issues
 		this.models.issues = new mejorua.models.IssueCollection(
 			[],
-			{apiURL: this.api.url}
+			{
+				apiURL: this.api.url,
+				map: this.map
+			}
 		);
+		this.models.issues.myFetch();
 
 		//this.DEBUGMap();
-		this.DEBUGIssueCollection();
-		this.DEBUGIssueModel(this.api.url);
+		//this.DEBUGIssueCollection();
+		//this.DEBUGIssueModel(this.api.url);
 
 		_.bindAll(this, "getIncidencia");
 		_.bindAll(this, "onGetIncidenciaResponse");
@@ -37,63 +47,6 @@ mejorua.controllers = mejorua.controllers || {};
 		$("#btn_setHostLocalhost").click(this.onBtn_setHostLocalhostClick);
 		$("#btn_setHostAndroidEmulatorHost").click(this.onBtn_setHostAndroidEmulatorHostClick);
 
-	}
-
-	this.DEBUGIssueCollection = function DEBUGIssueCollection() {
-		console.log("controllers.App.DEBUGIssueCollection()");
-
-		console.log("controllers.App.DEBUGIssueCollection() models.issues.url() = " + this.models.issues.url);
-
-		this.models.issues.fetch({
-			this: this,
-			success: function(collection, response, options) { console.log("controllers.App.DEBUGIssueCollection() models.issues.models = %O", options.this.models.issues.models); },
-			error: function() { console.log("controllers.App.DEBUGIssueCollection() models.issues.fetch ERROR"); }
-		});
-	}
-
-	this.DEBUGIssueModel = function DEBUGIssueModel(url) {
-		console.log("controllers.App.DEBUGIssueModel()");
-
-		this.models.DEBUGissue = new mejorua.models.Issue();
-		this.models.DEBUGissue.set({id: 1});
-		this.models.DEBUGissue.urlRoot = url + '/issues';
-		console.log("controllers.App.DEBUGIssueModel() DEBUGissue.url() = " + this.models.DEBUGissue.url());
-		
-		/*
-		this.models.DEBUGissue.fetch({
-			this: this,
-			success: function(collection, response, options) { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() = %O", options.this.models.DEBUGissue); },
-			error: function() { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() ERROR"); }
-		});
-		*/
-		deferred = this.models.DEBUGissue.fetch({this:this});
-		deferred.then(
-			function success(collection, response, options) {
-				console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() = %O", this.this.models.DEBUGissue);},
-			function error() { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() ERROR");});
-	}
-
-	this.DEBUGMap = function DEBUGMap() {
-
-		MB_ATTR = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery © <a href="http://mapbox.com">Mapbox</a>';
-
-		MB_URL = 'http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
-
-		OSM_URL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-		OSM_ATTRIB = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-
-		this.map = L.map('map').setView([51.505, -0.09], 13);
-
-		L.tileLayer(MB_URL, {attribution: MB_ATTR, id: 'examples.map-i86knfo3'}).addTo(map);
-
-		L.tileLayer('http://{s}.tiles.mapbox.com/v3/MapID/{z}/{x}/{y}.png', {
-    		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    		maxZoom: 18
-		}).addTo(this.map);
-
-		L.marker([51.5, -0.09]).addTo(this.map);
 	}
 
 	this.getIncidencia = function getIncidencia() {
@@ -170,6 +123,75 @@ mejorua.controllers = mejorua.controllers || {};
 
 		this.api.setHost("10.0.2.2");
 	}
+
+	/****************************************************************************************************************
+
+        DEBUG
+
+    ****************************************************************************************************************/
+
+	this.DEBUGIssueCollection = function DEBUGIssueCollection() {
+		console.log("controllers.App.DEBUGIssueCollection()");
+
+		console.log("controllers.App.DEBUGIssueCollection() models.issues.url() = " + this.models.issues.url);
+
+		this.models.issues.fetch({
+			this: this,
+			success: function(collection, response, options) { console.log("controllers.App.DEBUGIssueCollection() models.issues.models = %O", options.this.models.issues.models); },
+			error: function() { console.log("controllers.App.DEBUGIssueCollection() models.issues.fetch ERROR"); }
+		});
+	}
+
+	this.DEBUGIssueModel = function DEBUGIssueModel(url) {
+		console.log("controllers.App.DEBUGIssueModel()");
+
+		this.models.DEBUGissue = new mejorua.models.Issue();
+		this.models.DEBUGissue.set({id: 1});
+		this.models.DEBUGissue.urlRoot = url + '/issues';
+		console.log("controllers.App.DEBUGIssueModel() DEBUGissue.url() = " + this.models.DEBUGissue.url());
+		
+		/*
+		this.models.DEBUGissue.fetch({
+			this: this,
+			success: function(collection, response, options) { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() = %O", options.this.models.DEBUGissue); },
+			error: function() { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() ERROR"); }
+		});
+		*/
+		deferred = this.models.DEBUGissue.fetch({this:this});
+		deferred.then(
+			function success(collection, response, options) {
+				console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() = %O", this.this.models.DEBUGissue);},
+			function error() { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() ERROR");});
+	}
+
+	this.DEBUGMap = function DEBUGMap() {
+
+		MB_ATTR = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>';
+
+		MB_URL = 'http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
+
+		OSM_URL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+		OSM_ATTRIB = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+		this.map = L.map('map').setView([51.505, -0.09], 13);
+
+		L.tileLayer(MB_URL, {attribution: MB_ATTR, id: 'examples.map-i86knfo3'}).addTo(map);
+
+		L.tileLayer('http://{s}.tiles.mapbox.com/v3/MapID/{z}/{x}/{y}.png', {
+    		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    		maxZoom: 18
+		}).addTo(this.map);
+
+		L.marker([51.5, -0.09]).addTo(this.map);
+	}
+
+	/****************************************************************************************************************
+
+        AUTOINITIALIZATION (SIMILAR TO CONSTRUCTOR CALL ON NEW Map CLASS OBJECT)
+
+    ****************************************************************************************************************/
 
 	this.init();
 }

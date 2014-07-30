@@ -2,18 +2,24 @@ var mejorua = mejorua || {};
 (function() {
     mejorua.Map = function Map() {
 
+        /****************************************************************************************************************
+
+            ATRIBUTES
+
+        ****************************************************************************************************************/
+
+        this.map = undefined; //Leafleat Map
+        this.geoJSON = undefined; //GeoJSON to display
+
         this.pathToImages = 'img/map/';
 
-        this.map = undefined;
+        
         this.mapId = 'map';
 
-        //UA: 38.383572, -0.512019
-        //Torrevieja Glorieta: 37.977483, -0.682846
-        this.latitude = 38.383572;
-        this.longitude = -0.512019;
-
-        //zoom UA 16 perfect en mi portatil
-        this.zoom = 16;
+        
+        this.latitude = 38.383572; // Leaflet map default latitude - Set to University of Alicante
+        this.longitude = -0.512019; // Leaflet map default longitude - Set to University of Alicante
+        this.zoom = 16; // Leaflet map zoom level - Level 16 in University of Alicante works like a charm in my laptop
 
         this.tileOSMURL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         this.attributionOSM = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
@@ -24,27 +30,37 @@ var mejorua = mejorua || {};
             pending : "Pendiente"
         }
 
+        /****************************************************************************************************************
+
+            METHODS
+
+        ****************************************************************************************************************/
+
         this.init = function init() {
             console.log("mejorua.Map.init()");
 
             _.bindAll(this, "addGeoJSONpointToLayer");
             _.bindAll(this, "addGeoJSONonEachFeature");
+            _.bindAll(this, "onModelUpdated");
             
+            //Init Leaflet Map
             this.map = L.map(this.mapId).setView([this.latitude, this.longitude], this.zoom);
 
-            //L.tileLayer(OSM_URL, { attribution: CM_ATTR, styleId: 997 }).addTo(map);
+            //Load OSM map tiles + attribution
             L.tileLayer(this.tileOSMURL, {
                 attribution: this.attributionOSM
             }).addTo(this.map);
 
             this.initIcons();
 
-            this.DEBUGpopulateLocations();
-            this.DEBUGpopulateMarkers();
+            $(this).on('modelUpdated', this.onModelUpdated);
+
+            //this.DEBUGpopulateLocations();
+            //this.DEBUGpopulateMarkers();
         };
 
         this.initIcons = function initIcon() {
-
+            //22 62
             iconSize = [22, 31];
             iconAnchor = [(iconSize[0]/2), iconSize[1]];
             popupAnchor = [0, -iconSize[1]];
@@ -70,10 +86,10 @@ var mejorua = mejorua || {};
                 popupAnchor:  popupAnchor,
                 iconSize:     iconSize
             });
-            //22 62
         }
 
         this.addGeoJSON = function addGeoJSON(geoJSON) {
+            console.log("mejorua.Map.addGeoJSON(geoJSON:%O)", geoJSON);
 
             L.geoJson(geoJSON, {
                 pointToLayer: this.addGeoJSONpointToLayer,
@@ -103,9 +119,30 @@ var mejorua = mejorua || {};
             }
         }
 
+        /****************************************************************************************************************
+
+            EVENTS
+
+        ****************************************************************************************************************/
+
+        this.onModelUpdated = function onModelUpdated(event, geoJSON) {
+            console.log("mejorua.Map.onModelUpdated(geoJSON:%O)", geoJSON);
+
+            this.addGeoJSON(geoJSON);
+        }
+
+        /****************************************************************************************************************
+
+            DEBUG
+
+        ****************************************************************************************************************/
+
         this.DEBUGpopulateLocations = function DEBUGpopulateLocations() {
             console.log("mejorua.Map.DEBUGpopulateLocations()");
 
+            //UA: 38.383572, -0.512019
+            //Torrevieja Glorieta: 37.977483, -0.682846
+        
             this.locations = [];
 
             this.locations.aulario2 = {
@@ -169,6 +206,12 @@ var mejorua = mejorua || {};
             };
             return geojsonFeature;
         }
+
+        /****************************************************************************************************************
+
+            AUTOINITIALIZATION (SIMILAR TO CONSTRUCTOR CALL ON NEW Map CLASS OBJECT)
+
+        ****************************************************************************************************************/
 
         this.init();
     };
