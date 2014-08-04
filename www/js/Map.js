@@ -24,7 +24,12 @@ var mejorua = mejorua || {};
         this.tileOSMURL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         this.attributionOSM = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-        this.statusText = {
+        this.stateCSS = {
+            pending: 'issueStatePending',
+            inProgress: 'issueStateInProgress',
+            done: 'issueStateDone'
+        }
+        this.stateText = {
             done : "Hecho",
             inProgress: "En proceso",
             pending : "Pendiente"
@@ -101,7 +106,7 @@ var mejorua = mejorua || {};
 
             var icon = "";
 
-            switch (feature.properties.status) {
+            switch (feature.properties.state) {
                 case 'pending': icon = this.iconPending; break;
                 case 'inProgress': icon = this.iconInProgress; break;
                 case 'done': icon = this.iconDone; break;
@@ -112,10 +117,13 @@ var mejorua = mejorua || {};
 
         this.addGeoJSONonEachFeature = function addGeoJSONonEachFeature(feature, layer) {
             if (feature.properties) {
-                popupText = this.statusText[feature.properties.status] + "<br/>" +
-                            feature.properties.action + "<br/>" +
-                            feature.properties.term;
-                layer.bindPopup(popupText);
+                popupText = '<p>' + 
+                                this.stateText[feature.properties.state] + '<br/>' +
+                                feature.properties.action + '<br/>' +
+                                feature.properties.term + '<br/>' +
+                            '<a href="javascript:mejorua.app.onShowIssueDetail(' + feature.properties.id + ')" class="btn btn-xs btn-primary">Ver detalles</a>' +
+                            '</p>';
+                layer.bindPopup(popupText, {className: this.stateCSS[feature.properties.state]});
             }
         }
 
@@ -190,11 +198,11 @@ var mejorua = mejorua || {};
             //var marker = L.marker([this.locations['aulario2'].latitude, this.locations['aulario2'].longitude], {icon: this.icon}).addTo(this.map);
         }
 
-        this.DEBUGnewFeature = function DEBUGnewFeature(locationName, status) {
+        this.DEBUGnewFeature = function DEBUGnewFeature(locationName, state) {
             var geojsonFeature = {
                 "type": "Feature",
                 "properties": {
-                    "status": status,
+                    "state": state,
                     "action": "Action",
                     "term": "Term"
                 },

@@ -4,3 +4,15 @@
 	/* height: 100vh; */
 	height: auto;
 }
+
+.issueStatePending .leaflet-popup-content-wrapper, .issueStatePending .leaflet-popup-tip {
+	background-color: rgb(255, 134, 144);
+}
+
+.issueStateDone .leaflet-popup-content-wrapper, .issueStateDone .leaflet-popup-tip {
+	background-color: rgb(139, 255, 134);
+}
+
+.issueStateInProgress .leaflet-popup-content-wrapper, .issueStateInProgress .leaflet-popup-tip {
+	background-color: rgb(245, 255, 134);
+}

@@ -29,7 +29,7 @@ mejorua.models = mejorua.models || {};
         },
 
         myFetch: function myFetch() {
-            this.fetch({
+            var promise = this.fetch({
                 success: function(collection, response, options) {
                     console.log("mejorua.models.IssueCollection.myFetch() - collection:%O response:%O, options:%O", collection, response, options);
                 },
@@ -37,6 +37,8 @@ mejorua.models = mejorua.models || {};
                     console.log("mejorua.models.IssueCollection.myFetch() - fetch ERROR");
                 }
             });
+
+            return promise;
         },
 
         onSync: function onSync(event) {

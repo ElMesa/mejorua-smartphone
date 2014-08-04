@@ -18,6 +18,7 @@
 	<link href="css/master.css" rel="stylesheet">
 	<link href="css/header.css" rel="stylesheet">
 	<link href="css/map.css" rel="stylesheet">
+	<link href="css/issueDetail.css" rel="stylesheet">
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -48,6 +49,25 @@
 				</button>
 				<a class="navbar-brand" href="#">MejorUA</a>
 			</div>
+
+			<!------------------------ TESTING WITH THE MAIN ACTION BUTTON AT NAVBAR ------------------_>
+
+			<!--<button type="button" class="navbar-right btn btn-default btn-block navbar-btn">Sign in</button>-->
+
+			<!-- 
+			<ul class="nav nav-justified">
+	          <li class="active"><a href="#" class="btn btn-success">CREATE</a></li>
+	        </ul>
+	    	-->
+
+			<!-- 
+			<form class="navbar-form navbar-left" role="search">
+			  <button type="submit" class="btn btn-default btn-block">Submit</button>
+			</form>
+			-->
+
+			<!------------------------ TESTING WITH THE MAIN ACTION BUTTON AT NAVBAR - END ------------------>
+
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li class="active">
@@ -55,11 +75,12 @@
 					</li>
 					<li>
 						<a href="javascript:pageShowMap()">Mapa</a>
-						<!--<a href="#" onclick="pageShowMap()">Mapa</a>-->
+					</li>
+					<li>
+						<a href="javascript:pageShowIssueDetail()">Issue Detail</a>
 					</li>
 					<li>
 						<a href="javascript:pageShowRestClient()">REST Client</a>
-						<!--<a href="#" onclick="pageShowRestClient()">REST Client</a>-->
 					</li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown
@@ -86,6 +107,7 @@
 						</ul>
 					</li>
 				</ul>
+				<!--
 				<ul class="nav navbar-nav navbar-right">
 					<li>
 						<a href="../navbar/">Default</a>
@@ -97,6 +119,7 @@
 						<a href="./">Fixed top</a>
 					</li>
 				</ul>
+				-->
 			</div>
 			<!--/.nav-collapse -->
 		</div>
@@ -104,128 +127,477 @@
 
 	<!---------------------------------------------------------------------------------------------------------------------------
 
-	CONTAINER
+	PAGE - MAP
 
 ---------------------------------------------------------------------------------------------------------------------------->
 
-	
-			<div id="pageMap" class="container">
-				<div class="row">
-					<div class="fill col-md-offset-1 col-md-10">
-						<div id="map" class="fill"></div>
+
+	<div id="pageMap" class="container">
+		<div class="row">
+			<div class="fill col-md-offset-1 col-md-10">
+				<div id="map" class="fill"></div>
+			</div>
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+	<!-- /container pageMap -->
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	PAGE - ISSUE DETAIL
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div id="pageIssueDetail" class="container" style="display:none">
+		<div class="row">
+			<div class="fill col-md-offset-1 col-md-10">
+
+				<form id="issueDetail" class="form-horizontal" role="form">
+
+					<div class="form-group">
+						<div class="col-sm-2">
+							<h2>Incidencia</h2>
+						</div>
+						<div class="col-sm-10">
+							<h2 id="issueDetailId">XXX</h2>
+						</div>
 					</div>
-					<!-- /col -->
-				</div>
-				<!-- /row -->
-			</div>
-			<!-- /container -->
 
-			<div id="pageRestClient" class="container">
-				<div class="row">
-					<div class="col-md-offset-1 col-md-10">
-						<h2>Cliente para MejorUA.api v1</h2>
-
-
-						<h3>API URL</h3>
-
-						<div class="from-group">
-							<label for="apiHost">Host</label>
-							<input id="apiHost" type="text" class="form-control" value="10.0.2.2" />
-
-							<a id="btn_setHostLocalhost" class="btn btn-success">Set localhost</a>
-							<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Set 10.0.2.2</a>
+					<div class="form-group">
+						<label for="issueDetailAction" class="col-sm-2 control-label">
+							Accion
+						</label>
+						<div class="col-sm-10">
+							<input id="issueDetailAction" type="text" disabled class="form-control disabled" placeholder="Acción a realizar en la incidencia">
 						</div>
-
-						<div class="from-group">
-							<label for="apiPort">Port</label>
-							<input id="apiPort" type="text" class="form-control" value="8080" />
-						</div>
-
-						<div class="from-group">
-							<label for="apiPath">Path to API</label>
-							<input id="apiPath" type="text" id="apiPath" class="form-control" value="api" />
-						</div>
-
-						<h3>Collection</h3>
-
-						<div class="form-group">
-							<label for="collection">Collección REST</label>
-							<input id="collection" type="text" class="form-control" placeholder="" value="incidencia" disabled>
-						</div>
-
-						<h3>Recuperar Incidencia</h3>
-
-						<form id="fGet" role="form">
-
-							<div class="form-group">
-								<label for="fGet_resourceId">Id Recurso REST</label>
-								<input id="fGet_resourceId" type="text" class="form-control" placeholder="" value="1">
-							</div>
-
-							<a id="fGet_submit" class="btn btn-default">Recuperar incidencia</a>
-						</form>
-
-						<p>Respuesta del API</p>
-
-						<pre id="fGet_response"></pre>
-						<h3>Crear/Modificar Incidencia</h3>
-
-						<form id="fPut" role="form">
-
-							<div class="form-group">
-								<label for="fPut_resourceId">Id</label>
-								<input id="fPut_resourceId" type="text" class="form-control" placeholder="" value="1">
-							</div>
-
-							<div class="form-group">
-								<label for="fPut_latitude">Latitud</label>
-								<input id="fPut_latitude" type="text" class="form-control" placeholder="Introduzca la latitud de la incidencia" value="2">
-							</div>
-
-							<div class="form-group">
-								<label for="fPut_longitude">Longitud</label>
-								<input id="fPut_longitude" type="text" class="form-control" placeholder="Introduzca la longitud de la incidencia" value="2">
-							</div>
-
-							<div class="form-group">
-								<label for="fPut_term">Término</label>
-								<input id="fPut_term" type="text" class="form-control" placeholder="Termino al que se refiere la incidencia" value="2">
-							</div>
-
-							<div class="form-group">
-								<label for="fPut_action">Acción</label>
-								<input id="fPut_action" type="text" class="form-control" placeholder="Acción a realizar sobre el término" value="2">
-							</div>
-
-							<a id="fPut_submit" class="btn btn-default">Crear/Modificar incidencia</a>
-						</form>
-
-						<p>Respuesta del API</p>
-						<textarea id="fPut_response"></textarea>
 					</div>
-					<!-- /col -->
+
+					<div class="form-group">
+						<label for="issueDetailTerm" class="col-sm-2 control-label">
+							Objetivo
+						</label>
+						<div class="col-sm-10">
+							<input id="issueDetailTerm" type="text" disabled class="form-control disabled" placeholder="Objetivo de la acción a realizar en la incidencia">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="issueDetailState" class="col-sm-2 control-label">
+							Estado
+						</label>
+						<div class="col-sm-10">
+							<div class="input-group">
+								<span id="issueDetailStateImg" class="input-group-addon issueStateDoneBackground">
+									<img src="img/map/icon_done.png">
+								</span>
+								<input id="issueDetailState" type="text" disabled class="form-control issueStateDoneBackground" placeholder="Estado de la incidencia">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label">
+							Test pending
+						</label>
+						<div class="col-sm-10">
+							<div class="input-group">
+								<span id="issueDetailStateImg" class="input-group-addon issueStatePendingBackground">
+									<img src="img/map/icon_pending.png">
+								</span>
+								<input id="issueDetailState" type="text" disabled class="form-control issueStatePendingBackground" placeholder="Estado de la incidencia" value="test">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label">
+							Test inProgress
+						</label>
+						<div class="col-sm-10">
+							<div class="input-group">
+								<span id="issueDetailStateImg" class="input-group-addon issueStateInProgressBackground">
+									<img src="img/map/icon_inProgress.png">
+								</span>
+								<input id="issueDetailState" type="text" disabled class="form-control issueStateInProgressBackground" placeholder="Estado de la incidencia">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label">
+							Lugar
+						</label>
+						<div class="col-sm-5">
+							<div class="input-group">
+								<span class="input-group-addon">Latitud</span>
+								<input id="issueDetailLatitude" type="text" disabled class="form-control" placeholder="Latitud de la incidencia">
+							</div>
+						</div>
+						<div class="col-sm-5">
+							<div class="input-group">
+								<span class="input-group-addon">Longitud</span>
+								<input id="issueDetailLongitude" type="text" disabled class="form-control" placeholder="Longitud de la incidencia">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 control-label">
+							Actividad
+						</label>
+						<div class="col-sm-10">
+
+							<table class="table table-striped table-bordered">
+
+								<thead>
+									<tr>
+										<td>
+											Fecha
+										</td>
+										<td>
+											Actividad
+										</td>
+									</tr>
+								</thead>
+
+								<tbody>
+
+									<tr>
+										<td>
+											dd/mm/aaaa hh:mm
+										</td>
+										<td>
+											Creada la incidencia
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											dd/mm/aaaa hh:mm
+										</td>
+										<td>
+											Cambiado estado a pendiente
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											dd/mm/aaaa hh:mm
+										</td>
+										<td>
+											Cambiado estado a en progreso
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											dd/mm/aaaa hh:mm
+										</td>
+										<td>
+											Cambiado estado a finalizada
+										</td>
+									</tr>
+
+								</tbody>
+
+							</table>
+
+						</div>
+					</div>
+
+				</form>
+
+			</div>
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+	<!-- /container pageMap -->
+
+	<!-- issueDetailsTemplate -->
+	<script id="issueDetailTemplate" type="text/x-handlebars-template">
+
+		<form id="issueDetail" class="form-horizontal" role="form">
+
+			<div class="form-group">
+				<div class="col-sm-2">
+					<h2>Incidencia</h2>
 				</div>
-				<!-- /row -->
+				<div class="col-sm-10">
+					<h2 id="issueDetailId">{{id}}</h2>
+				</div>
 			</div>
 
-			<div>
-				<h1>Atributions</h1>
-
-				<div>
-					<h2>Map icon happy</h2>
-					Happy designed by <a href="http://www.thenounproject.com/Julihan">Julien Deveaux</a> from the <a href="http://www.thenounproject.com">Noun Project</a>
+			<div class="form-group">
+				<label for="issueDetailAction" class="col-sm-2 control-label">
+					Accion
+				</label>
+				<div class="col-sm-10">
+					<input id="issueDetailAction" type="text" disabled class="form-control disabled" placeholder="Acción a realizar en la incidencia" value="{{action}}">
 				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetailTerm" class="col-sm-2 control-label">
+					Objetivo
+				</label>
+				<div class="col-sm-10">
+					<input id="issueDetailTerm" type="text" disabled class="form-control disabled" placeholder="Objetivo de la acción a realizar en la incidencia" value="{{term}}">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetailState" class="col-sm-2 control-label">
+					Estado
+				</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span id="issueDetailStateImg" class="input-group-addon {{viewStateCSS}}">
+							<img src="{{viewStateIcon}}">
+						</span>
+						<input id="issueDetailState" type="text" disabled class="form-control {{viewStateCSS}}" placeholder="Estado de la incidencia" value="{{viewStateText}}">
+					</div>
+				</div>
+			</div>
+
+			<!--
+			/*
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Test pending
+				</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span id="issueDetailStateImg" class="input-group-addon issueStatePendingBackground">
+							<img src="img/map/icon_pending.png">
+						</span>
+						<input id="issueDetailState" type="text" disabled class="form-control issueStatePendingBackground" placeholder="Estado de la incidencia" value="test">
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Test inProgress
+				</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span id="issueDetailStateImg" class="input-group-addon issueStateInProgressBackground">
+							<img src="img/map/icon_inProgress.png">
+						</span>
+						<input id="issueDetailState" type="text" disabled class="form-control issueStateInProgressBackground" placeholder="Estado de la incidencia">
+					</div>
+				</div>
+			</div>
+			*/
+			-->
+		
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Lugar
+				</label>
+				<div class="col-sm-5">
+					<div class="input-group">
+						<span class="input-group-addon">Latitud</span>
+						<input id="issueDetailLatitude" type="text" disabled class="form-control" placeholder="Latitud de la incidencia" value="{{latitude}}">
+					</div>
+				</div>
+				<div class="col-sm-5">
+					<div class="input-group">
+						<span class="input-group-addon">Longitud</span>
+						<input id="issueDetailLongitude" type="text" disabled class="form-control" placeholder="Longitud de la incidencia" value="{{longitude}}">
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Actividad
+				</label>
+				<div class="col-sm-10">
+
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<td>
+									Fecha
+								</td>
+								<td>
+									Actividad
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each events}}
+							<tr>
+								<td>
+									{{viewDate}}
+								</td>
+								<td class="{{viewBackgroundCSS}}">
+									{{viewType}}
+								</td>
+							</tr>
+							{{/each}}
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+
+		</form>
+
+	</script>
+	<!-- issueDetailsTemplate - END -->
+
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	PAGE - CREATE ISSUE
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div id="pageIssueCreate" class="container" style="display:none">
+		<div class="row">
+			<div class="fill col-md-offset-1 col-md-10">
+
+
 
 			</div>
-			<!-- /container -->
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+	<!-- /container pageIssueCreate -->
 
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	REST CLIENT
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div id="pageRestClient" class="container" style="display:none">
+		<div class="row">
+			<div class="col-md-offset-1 col-md-10">
+				<h2>Cliente para MejorUA.api v1</h2>
+
+
+				<h3>API URL</h3>
+
+				<div class="from-group">
+					<label for="apiHost">Host</label>
+					<input id="apiHost" type="text" class="form-control" value="10.0.2.2" />
+
+					<a id="btn_setHostLocalhost" class="btn btn-success">Set localhost</a>
+					<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Set 10.0.2.2</a>
+				</div>
+
+				<div class="from-group">
+					<label for="apiPort">Port</label>
+					<input id="apiPort" type="text" class="form-control" value="8080" />
+				</div>
+
+				<div class="from-group">
+					<label for="apiPath">Path to API</label>
+					<input id="apiPath" type="text" id="apiPath" class="form-control" value="api" />
+				</div>
+
+				<h3>Collection</h3>
+
+				<div class="form-group">
+					<label for="collection">Collección REST</label>
+					<input id="collection" type="text" class="form-control" placeholder="" value="incidencia" disabled>
+				</div>
+
+				<h3>Recuperar Incidencia</h3>
+
+				<form id="fGet" role="form">
+
+					<div class="form-group">
+						<label for="fGet_resourceId">Id Recurso REST</label>
+						<input id="fGet_resourceId" type="text" class="form-control" placeholder="" value="1">
+					</div>
+
+					<a id="fGet_submit" class="btn btn-default">Recuperar incidencia</a>
+				</form>
+
+				<p>Respuesta del API</p>
+
+				<pre id="fGet_response"></pre>
+				<h3>Crear/Modificar Incidencia</h3>
+
+				<form id="fPut" role="form">
+
+					<div class="form-group">
+						<label for="fPut_resourceId">Id</label>
+						<input id="fPut_resourceId" type="text" class="form-control" placeholder="" value="1">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_latitude">Latitud</label>
+						<input id="fPut_latitude" type="text" class="form-control" placeholder="Introduzca la latitud de la incidencia" value="2">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_longitude">Longitud</label>
+						<input id="fPut_longitude" type="text" class="form-control" placeholder="Introduzca la longitud de la incidencia" value="2">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_term">Término</label>
+						<input id="fPut_term" type="text" class="form-control" placeholder="Termino al que se refiere la incidencia" value="2">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_action">Acción</label>
+						<input id="fPut_action" type="text" class="form-control" placeholder="Acción a realizar sobre el término" value="2">
+					</div>
+
+					<a id="fPut_submit" class="btn btn-default">Crear/Modificar incidencia</a>
+				</form>
+
+				<p>Respuesta del API</p>
+				<textarea id="fPut_response"></textarea>
+			</div>
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	ATRIBUTIONS
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div style="display:none">
+		<h1>Atributions</h1>
+
+		<div>
+			<h2>Map icon happy</h2>
+			Happy designed by
+			<a href="http://www.thenounproject.com/Julihan">Julien Deveaux</a>from the
+			<a href="http://www.thenounproject.com">Noun Project</a>
+		</div>
+
+	</div>
+	<!-- /container -->
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	JS LOADING
+
+---------------------------------------------------------------------------------------------------------------------------->
+
 	<script src="js/libs/jquery-1.11.0.min.js"></script>
 
+	<!-- 
 	<script src="http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery.effects.core.js"></script>
 	<script src="http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery.effects.slide.js"></script>
+	-->
+	<script src="js/libs/jquery-ui-1.8.24.effects.core.js"></script>
+	<script src="js/libs/jquery-ui-1.8.24.effects.slide.js"></script>
 
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="js/libs/bootstrap-3.1.1.min.js"></script>
 
 	<script src="js/libs/underscore-1.6.0.min.js"></script>
@@ -234,8 +606,11 @@
 
 	<script src="js/libs/leaflet-0.7.3.js"></script>
 
+	<script src="js/libs/handlebars-1.3.0.js"></script>
+
 	<script src="js/models/Issue.js"></script>
 	<script src="js/models/IssueCollection.js"></script>
+	<script src="js/views/IssueDetailView.js"></script>
 	<script src="js/util/Api.js"></script>
 	<script src="js/Map.js"></script>
 	<script src="js/controllers/App.js"></script>

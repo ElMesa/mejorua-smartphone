@@ -4,35 +4,133 @@ $(document).ready(function() {
 
     mejorua.app = new mejorua.controllers.App();
 
-    //testPUT(mejorua.app.api.url);
-    //testPOST(mejorua.app.api.url);
+    initPages();
 
-    $('#pageRestClient').hide();
-
+    //TODO - REFACTOR - Move to a controller/header.js
     $('.navbar-collapse.in a').on('click', function() {
         $(".navbar-toggle").click();
     });
+
+    //DEBUGPUT(mejorua.app.api.url);
+    //DEBUGPOST(mejorua.app.api.url);
 });
 
+//TODO - REFACTOR - Move to controller/page.js
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// PAGE HANDDLING
+///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function initPages() {
+    actualPage = 'pageMap';
+
+    $('#pageMap').hide();
+    $('#pageRestClient').hide();
+    $('#pageIssueDetail').hide();
+
+    $('#' + actualPage).fadeIn();
+}
+
+function pageTransition(slideFrom, slideTo, slideOut, slideIn) {
+
+    var delay = 500;
+
+    $('#' + slideFrom).hide('slide', {
+        direction: slideOut
+    }, delay);
+    $('#' + slideTo).delay(delay).show('slide', {
+        direction: slideIn
+    }, delay);
+}
+
+function pageShowIssueDetail() {
+
+    if (actualPage != 'pageIssueDetail') {
+
+        var slideFrom = actualPage;
+        var slideTo = 'pageIssueDetail';
+        var slideOut = '';
+        var slideIn = '';
+
+        switch (actualPage) {
+            case 'pageMap':
+                slideOut = 'left';
+                slideIn = 'right';
+                break;
+            case 'pageRestClient':
+                slideOut = 'right';
+                slideIn = 'left';
+                break;
+        }
+
+        pageTransition(slideFrom, slideTo, slideOut, slideIn);
+
+        actualPage = 'pageIssueDetail';
+    }
+}
+
+//TODO - REFACTOR - Using pageTransition
 function pageShowMap() {
-    $('#pageRestClient').hide('slide', {
-        direction: 'right'
-    }, 500);
-    $('#pageMap').delay(500).show('slide', {
-        direction: 'left'
-    }, 500);
+
+    if (actualPage != 'pageMap') {
+
+        var slideFrom = actualPage;
+        var slideTo = 'pageMap';
+        var slideOut = '';
+        var slideIn = '';
+
+        switch (actualPage) {
+            case 'pageIssueDetail':
+                slideOut = 'right';
+                slideIn = 'left';
+                break;
+            case 'pageRestClient':
+                slideOut = 'right';
+                slideIn = 'left';
+                break;
+        }
+
+        pageTransition(slideFrom, slideTo, slideOut, slideIn);
+
+        actualPage = 'pageMap';
+
+    }
 }
 
+//TODO - REFACTOR - Using pageTransition
 function pageShowRestClient() {
-    $('#pageMap').hide('slide', {
-        direction: 'left'
-    }, 500);
-    $('#pageRestClient').delay(500).show('slide', {
-        direction: 'right'
-    }, 500);
+    
+    if (actualPage != 'pageRestClient') {
+
+        var slideFrom = actualPage;
+        var slideTo = 'pageRestClient';
+        var slideOut = '';
+        var slideIn = '';
+
+        switch (actualPage) {
+            case 'pageMap':
+                slideOut = 'left';
+                slideIn = 'right';
+                break;
+            case 'pageRestClient':
+                slideOut = 'left';
+                slideIn = 'right';
+                break;
+        }
+
+        pageTransition(slideFrom, slideTo, slideOut, slideIn);
+
+        actualPage = 'pageRestClient';
+
+    }
 }
 
-function testPUT(apiURL) {
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// DEBUG
+///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function DEBUGPUT(apiURL) {
     console.log("window.testPUT(" + apiURL + ")");
 
     xmlhttp = new XMLHttpRequest();
@@ -48,7 +146,7 @@ function testPUT(apiURL) {
     console.log("testPUT() - RESPONSE: ", xmlhttp.responseText);
 };
 
-function testPOST(apiURL) {
+function DEBUGPOST(apiURL) {
     console.log("window.testPOST(" + apiURL + ")");
 
     xmlhttp = new XMLHttpRequest();

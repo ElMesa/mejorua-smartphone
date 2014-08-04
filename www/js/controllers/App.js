@@ -2,197 +2,241 @@ var mejorua = mejorua || {};
 mejorua.controllers = mejorua.controllers || {};
 
 (function() {
-	mejorua.controllers.App = function App() {
+    mejorua.controllers.App = function App() {
 
-	/****************************************************************************************************************
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///	ATRIBUTTES
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        METHODS
+        this.models = {};
+        this.views = {};
 
-    ****************************************************************************************************************/
+        this.api = undefined;
+        this.map = undefined;
 
-	this.init = function init() {
-		console.log("controllers.App.init()");
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///	METHODS
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        this.init = function init() {
+            console.log("controllers.App.init()");
 
-		this.models = {};
-		
-		this.api = new mejorua.Api();
-		this.map = new mejorua.Map();
+            this.api = new mejorua.Api();
+            this.map = new mejorua.Map();
 
-		// Backbone Collection - Issues
-		this.models.issues = new mejorua.models.IssueCollection(
-			[],
-			{
-				apiURL: this.api.url,
-				map: this.map
-			}
-		);
-		this.models.issues.myFetch();
+            this.views.issueDetail = new mejorua.views.IssueDetail();
 
-		//this.DEBUGMap();
-		//this.DEBUGIssueCollection();
-		//this.DEBUGIssueModel(this.api.url);
+            // Backbone Collection - Issues
+            this.models.issues = new mejorua.models.IssueCollection(
+                [], {
+                    apiURL: this.api.url,
+                    map: this.map
+                }
+            );
+            var fetchPromise = this.models.issues.myFetch();
 
-		_.bindAll(this, "getIncidencia");
-		_.bindAll(this, "onGetIncidenciaResponse");
+            //this.DEBUGMap();
+            //this.DEBUGIssueCollection();
+            //this.DEBUGIssueModel(this.api.url);
+            _.bindAll(this, "DEBUGIssueDetail");
+            fetchPromise.done(this.DEBUGIssueDetail);
 
-		_.bindAll(this, "putIncidencia");
-		_.bindAll(this, "onPutIncidenciaResponse");
+            //TODO - REFACTOR - to controller.restClient or view.restClient
+            /////////////////////////////////////////////////////////////////////////
+            //Page API REST Client
+            _.bindAll(this, "getIncidencia");
+            _.bindAll(this, "onGetIncidenciaResponse");
 
-		_.bindAll(this, "onBtn_setHostLocalhostClick");
-		_.bindAll(this, "onBtn_setHostAndroidEmulatorHostClick");
+            _.bindAll(this, "putIncidencia");
+            _.bindAll(this, "onPutIncidenciaResponse");
 
-		$("#fGet_submit").click(this.getIncidencia);
-		$("#fPut_submit").click(this.putIncidencia);
+            _.bindAll(this, "onBtn_setHostLocalhostClick");
+            _.bindAll(this, "onBtn_setHostAndroidEmulatorHostClick");
 
-		$("#btn_setHostLocalhost").click(this.onBtn_setHostLocalhostClick);
-		$("#btn_setHostAndroidEmulatorHost").click(this.onBtn_setHostAndroidEmulatorHostClick);
+            $("#fGet_submit").click(this.getIncidencia);
+            $("#fPut_submit").click(this.putIncidencia);
 
-	}
+            $("#btn_setHostLocalhost").click(this.onBtn_setHostLocalhostClick);
+            $("#btn_setHostAndroidEmulatorHost").click(this.onBtn_setHostAndroidEmulatorHostClick);
+            //Page API REST Client - END
+            ///////////////////////////////////////////////////////////////////////////
 
-	this.getIncidencia = function getIncidencia() {
-		console.log("mejorua.getIncidencia()");
+        }
 
-		$("#fGet_response").html("Waiting response.");
+        this.onShowIssueDetail = function onShowIssueDetail(id) {
 
-		this.api.updateModel();
-		var resourceUrl = this.api.buildResourceURL();
+        	this.views.issueDetail.update(this.models.issues.get(id).attributes);
 
-		$.ajax({
-			url : resourceUrl,
-			type : "GET",
-			dataType : 'json',
-		// success : this.onGetIncidenciaResponse,
-		// error : this.onAjaxError
-		}).done(this.onGetIncidenciaResponse).fail(this.onAjaxError);
-	}
+        	//TODO - Use refactor and use this.page.showIssueDetail()
+        	pageShowIssueDetail();
+        }
 
-	this.onGetIncidenciaResponse = function onGetIncidenciaResponse(data, status, xhr) {
-		console.log("mejorua.onGetIncidenciaResponse(data %O, status %O, xhr %O)", data, status, xhr);
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///	//TODO - REFACTOR - controller.RestClient
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        this.getIncidencia = function getIncidencia() {
+            console.log("mejorua.getIncidencia()");
 
-		stepToJSONPrettyPrint = JSON.parse(xhr.responseText);
-		JSONprettyPrint = JSON.stringify(stepToJSONPrettyPrint, undefined, 2);
+            $("#fGet_response").html("Waiting response.");
 
-		$("#fGet_response").html(JSONprettyPrint);
+            this.api.updateModel();
+            var resourceUrl = this.api.buildResourceURL();
 
-		// $("#fPut_resourceId").val(data.id)
-	}
+            $.ajax({
+                url: resourceUrl,
+                type: "GET",
+                dataType: 'json',
+            }).done(this.onGetIncidenciaResponse).fail(this.onAjaxError);
+        }
 
-	this.putIncidencia = function putIncidencia() {
-		console.log("mejorua.putIncidencia()");
+        this.onGetIncidenciaResponse = function onGetIncidenciaResponse(data, status, xhr) {
+            console.log("mejorua.onGetIncidenciaResponse(data %O, status %O, xhr %O)", data, status, xhr);
 
-		$("#fPut_response").html("Waiting response.");
-		
-		var issue = {};
-		issue.id = $("#fPut_resourceId").val();
-		issue.latitude = $("#fPut_latitude").val();
-		issue.longitude = $("#fPut_longitude").val();
-		issue.term = $("#fPut_term").val();
-		issue.action = $("#fPut_action").val();
-		
-		this.api.updateModel();
-		
-		var resourceUrl = this.api.buildResourceURL();
-		var JSONdata = JSON.stringify(issue);
-		$.ajax({
-			url : resourceUrl,
-			type : "POST",
-			contentType : 'application/json; charset=UTF-8',
-			data : JSONdata,
-		}).done(this.onPutIncidenciaResponse).fail(this.onAjaxError);
+            stepToJSONPrettyPrint = JSON.parse(xhr.responseText);
+            JSONprettyPrint = JSON.stringify(stepToJSONPrettyPrint, undefined, 2);
 
-	}
+            $("#fGet_response").html(JSONprettyPrint);
+        }
 
-	this.onPutIncidenciaResponse = function onPutIncidenciaResponse(data, status, xhr) {
-		console.log("mejorua.onPutIncidenciaResponse(data %O, status %O, xhr %O)", data, status, xhr);
+        this.putIncidencia = function putIncidencia() {
+            console.log("mejorua.putIncidencia()");
 
-		$("#fPut_response").html(xhr.status + " " + xhr.statusText + ":" + xhr.responseText);
-	}
+            $("#fPut_response").html("Waiting response.");
 
-	this.onAjaxError = function onAjaxError(xhr, status, error) {
-		console.log("mejorua.onAjaxError(xhr %O, status %O, error %O)", xhr, status, error);
-	}
+            var issue = {};
+            issue.id = $("#fPut_resourceId").val();
+            issue.latitude = $("#fPut_latitude").val();
+            issue.longitude = $("#fPut_longitude").val();
+            issue.term = $("#fPut_term").val();
+            issue.action = $("#fPut_action").val();
 
-	this.onBtn_setHostLocalhostClick = function onBtn_setHostLocalhostClick() {
-		console.log("mejorua.onBtn_setHostLocalhostClick()");
+            this.api.updateModel();
 
-		this.api.setHost("localhost");
-	}
+            var resourceUrl = this.api.buildResourceURL();
+            var JSONdata = JSON.stringify(issue);
+            $.ajax({
+                url: resourceUrl,
+                type: "POST",
+                contentType: 'application/json; charset=UTF-8',
+                data: JSONdata,
+            }).done(this.onPutIncidenciaResponse).fail(this.onAjaxError);
 
-	this.onBtn_setHostAndroidEmulatorHostClick = function onBtn_setHostAndroidEmulatorHostClick() {
-		console.log("mejorua.onBtn_setHostAndroidEmulatorHostClick()");
+        }
 
-		this.api.setHost("10.0.2.2");
-	}
+        this.onPutIncidenciaResponse = function onPutIncidenciaResponse(data, status, xhr) {
+            console.log("mejorua.onPutIncidenciaResponse(data %O, status %O, xhr %O)", data, status, xhr);
 
-	/****************************************************************************************************************
+            $("#fPut_response").html(xhr.status + " " + xhr.statusText + ":" + xhr.responseText);
+        }
 
-        DEBUG
+        this.onBtn_setHostLocalhostClick = function onBtn_setHostLocalhostClick() {
+            console.log("mejorua.onBtn_setHostLocalhostClick()");
 
-    ****************************************************************************************************************/
+            this.api.setHost("localhost");
+        }
 
-	this.DEBUGIssueCollection = function DEBUGIssueCollection() {
-		console.log("controllers.App.DEBUGIssueCollection()");
+        this.onBtn_setHostAndroidEmulatorHostClick = function onBtn_setHostAndroidEmulatorHostClick() {
+            console.log("mejorua.onBtn_setHostAndroidEmulatorHostClick()");
 
-		console.log("controllers.App.DEBUGIssueCollection() models.issues.url() = " + this.models.issues.url);
+            this.api.setHost("10.0.2.2");
+        }
 
-		this.models.issues.fetch({
-			this: this,
-			success: function(collection, response, options) { console.log("controllers.App.DEBUGIssueCollection() models.issues.models = %O", options.this.models.issues.models); },
-			error: function() { console.log("controllers.App.DEBUGIssueCollection() models.issues.fetch ERROR"); }
-		});
-	}
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///	//TODO - REFACTOR - controller.Api
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        this.onAjaxError = function onAjaxError(xhr, status, error) {
+            console.log("mejorua.onAjaxError(xhr %O, status %O, error %O)", xhr, status, error);
+        }
 
-	this.DEBUGIssueModel = function DEBUGIssueModel(url) {
-		console.log("controllers.App.DEBUGIssueModel()");
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///	DEBUG
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		this.models.DEBUGissue = new mejorua.models.Issue();
-		this.models.DEBUGissue.set({id: 1});
-		this.models.DEBUGissue.urlRoot = url + '/issues';
-		console.log("controllers.App.DEBUGIssueModel() DEBUGissue.url() = " + this.models.DEBUGissue.url());
-		
-		/*
-		this.models.DEBUGissue.fetch({
-			this: this,
-			success: function(collection, response, options) { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() = %O", options.this.models.DEBUGissue); },
-			error: function() { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() ERROR"); }
-		});
-		*/
-		deferred = this.models.DEBUGissue.fetch({this:this});
-		deferred.then(
-			function success(collection, response, options) {
-				console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() = %O", this.this.models.DEBUGissue);},
-			function error() { console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() ERROR");});
-	}
+        this.DEBUGIssueCollection = function DEBUGIssueCollection() {
+            console.log("controllers.App.DEBUGIssueCollection()");
 
-	this.DEBUGMap = function DEBUGMap() {
+            console.log("controllers.App.DEBUGIssueCollection() models.issues.url() = " + this.models.issues.url);
 
-		MB_ATTR = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery © <a href="http://mapbox.com">Mapbox</a>';
+            this.models.issues.fetch({
+                this: this,
+                success: function(collection, response, options) {
+                    console.log("controllers.App.DEBUGIssueCollection() models.issues.models = %O", options.this.models.issues.models);
+                },
+                error: function() {
+                    console.log("controllers.App.DEBUGIssueCollection() models.issues.fetch ERROR");
+                }
+            });
+        }
 
-		MB_URL = 'http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
+        this.DEBUGIssueModel = function DEBUGIssueModel(url) {
+            console.log("controllers.App.DEBUGIssueModel()");
 
-		OSM_URL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-		OSM_ATTRIB = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+            this.models.DEBUGissue = new mejorua.models.Issue();
+            this.models.DEBUGissue.set({
+                id: 1
+            });
+            this.models.DEBUGissue.urlRoot = url + '/issues';
+            console.log("controllers.App.DEBUGIssueModel() DEBUGissue.url() = " + this.models.DEBUGissue.url());
 
-		this.map = L.map('map').setView([51.505, -0.09], 13);
+            deferred = this.models.DEBUGissue.fetch({
+                this: this
+            });
+            deferred.then(
+                function success(collection, response, options) {
+                    console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() = %O", this.this.models.DEBUGissue);
+                },
+                function error() {
+                    console.log("controllers.App.DEBUGIssueModel() DEBUGissue.fetch() ERROR");
+                });
+        }
 
-		L.tileLayer(MB_URL, {attribution: MB_ATTR, id: 'examples.map-i86knfo3'}).addTo(map);
+        this.DEBUGMap = function DEBUGMap() {
+            console.log("controllers.App.DEBUGMap()");
 
-		L.tileLayer('http://{s}.tiles.mapbox.com/v3/MapID/{z}/{x}/{y}.png', {
-    		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    		maxZoom: 18
-		}).addTo(this.map);
+            MB_ATTR = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="http://mapbox.com">Mapbox</a>';
 
-		L.marker([51.5, -0.09]).addTo(this.map);
-	}
+            MB_URL = 'http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
 
-	/****************************************************************************************************************
+            OSM_URL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+            OSM_ATTRIB = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-        AUTOINITIALIZATION (SIMILAR TO CONSTRUCTOR CALL ON NEW Map CLASS OBJECT)
+            this.map = L.map('map').setView([51.505, -0.09], 13);
 
-    ****************************************************************************************************************/
+            L.tileLayer(MB_URL, {
+                attribution: MB_ATTR,
+                id: 'examples.map-i86knfo3'
+            }).addTo(map);
 
-	this.init();
-}
+            L.tileLayer('http://{s}.tiles.mapbox.com/v3/MapID/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                maxZoom: 18
+            }).addTo(this.map);
+
+            L.marker([51.5, -0.09]).addTo(this.map);
+        }
+
+        this.DEBUGIssueDetail = function DEBUGIssueDetail() {
+
+            this.views.issueDetail.update(this.models.issues.get(1).attributes);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///	SELF INITILIZATION
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+    }
 })();
