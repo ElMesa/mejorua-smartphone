@@ -32,15 +32,15 @@ mejorua.views = mejorua.views || {};
         }
 
         this.evenTypeText = {
-        	create: 'Creada la incidencia',
-        	state_change_pending: 'Cambiado estado a pendiente',
-        	state_change_inProgress: 'Cambiado estado a en progreso',
-        	state_change_done: 'Cambiado estado a finalizada'
+        	CREATE: 'Creada la incidencia',
+        	STATE_CHANGE_PENDING: 'Cambiado estado a pendiente',
+        	STATE_CHANGE_INPROGRESS: 'Cambiado estado a en progreso',
+        	STATE_CHANGE_DONE: 'Cambiado estado a finalizada'
         }
         this.evenTypeBackgroundCSS = {
-        	state_change_pending: 'issueStatePendingBackground',
-        	state_change_inProgress: 'issueStateInProgressBackground',
-        	state_change_done: 'issueStateDoneBackground'
+        	STATE_CHANGE_PENDING: 'issueStatePendingBackground',
+        	STATE_CHANGE_INPROGRESS: 'issueStateInProgressBackground',
+        	STATE_CHANGE_DONE: 'issueStateDoneBackground'
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

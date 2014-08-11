@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#deployFolder="/home/mint-mesa/Dev/Software/Libs/apache-tomcat-7.0.54/webapps/mejorua-api"
-deployFolder="/home/mint-mesa/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/mejorua-api"
+deployFolder="/home/mint-mesa/Dev/Software/Libs/apache-tomcat-7.0.54/webapps/mejorua-api"
+#deployFolder="/home/mint-mesa/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/mejorua-api"
 
 #targetURL="http://localhost:8080/mejorua-api"
-targetURL="http://localhost:8080/ROOT"
+targetURL="http://localhost:8080/mejorua-api"
 
 if [ $# -eq 0 ]
   then
