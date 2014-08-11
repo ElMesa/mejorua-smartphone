@@ -17,8 +17,6 @@ echo Deploying Phonegap app to:
 echo -e '\t'$deployFolder
 echo
 
-#rm -rf $deployFolder
-#mkdir $deployFolder
 ls -1 $deployFolder | grep -v 'META-INF\|WEB-INF' | xargs rm -rf
 echo -e '\tDeleted original deploy except META-INF and WEB-INF'
 

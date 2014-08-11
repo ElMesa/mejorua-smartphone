@@ -16,19 +16,19 @@ mejorua.views = mejorua.views || {};
         this.drawId = 'issueDetail';
 
         this.stateIcon = {
-        	pending: 'img/map/icon_pending.png',
-        	inProgress: 'img/map/icon_inProgress.png',
-        	done: 'img/map/icon_done.png'
+        	PENDING: 'img/map/icon_pending.png',
+        	INPROGRESS: 'img/map/icon_inProgress.png',
+        	DONE: 'img/map/icon_done.png'
         }
         this.stateCSS = {
-        	pending: 'issueStatePendingBackground',
-        	inProgress: 'issueStateInProgressBackground',
-        	done: 'issueStateDoneBackground'
+        	PENDING: 'issueStatePendingBackground',
+        	INPROGRESS: 'issueStateInProgressBackground',
+        	DONE: 'issueStateDoneBackground'
         }
         this.stateText = {
-        	pending: 'Acción pendiente',
-        	inProgress: 'Acción en progreso',
-        	done: 'Acción finalizada'
+        	PENDING: 'Acción pendiente',
+        	INPROGRESS: 'Acción en progreso',
+        	DONE: 'Acción finalizada'
         }
 
         this.evenTypeText = {

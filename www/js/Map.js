@@ -25,15 +25,18 @@ var mejorua = mejorua || {};
         this.attributionOSM = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
         this.stateCSS = {
-            pending: 'issueStatePending',
-            inProgress: 'issueStateInProgress',
-            done: 'issueStateDone'
+            PENDING: 'issueStatePending',
+            INPROGRESS: 'issueStateInProgress',
+            DONE: 'issueStateDone'
         }
         this.stateText = {
-            done : "Hecho",
-            inProgress: "En proceso",
-            pending : "Pendiente"
+            PENDING : "Pendiente",
+            INPROGRESS: "En proceso",
+            DONE : "Hecho"
         }
+
+        //Icon associated with a state. INITIALIZED AT initIcon()
+        this.stateIcon = undefined; 
 
         /****************************************************************************************************************
 
@@ -91,6 +94,12 @@ var mejorua = mejorua || {};
                 popupAnchor:  popupAnchor,
                 iconSize:     iconSize
             });
+
+            this.stateIcon = {
+                PENDING : this.iconPending,
+                INPROGRESS: this.iconInProgress,
+                DONE : this.iconDone
+            }
         }
 
         this.addGeoJSON = function addGeoJSON(geoJSON) {
@@ -106,11 +115,15 @@ var mejorua = mejorua || {};
 
             var icon = "";
 
+            /*
             switch (feature.properties.state) {
                 case 'pending': icon = this.iconPending; break;
                 case 'inProgress': icon = this.iconInProgress; break;
                 case 'done': icon = this.iconDone; break;
             }
+            */
+
+            icon = this.stateIcon[feature.properties.state];
     
             return L.marker(latlng, {icon: icon});
         }
