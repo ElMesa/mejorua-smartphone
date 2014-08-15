@@ -7,16 +7,17 @@ var mejorua = mejorua || {};
             ATRIBUTES
 
         ****************************************************************************************************************/
-
+        var self = this;
         this.map = undefined; //Leafleat Map
         this.geoJSON = undefined; //GeoJSON to display
+        this.newIssueMarker = undefined;
 
         this.pathToImages = 'img/map/';
 
-        
+
         this.mapId = 'map';
 
-        
+
         this.latitude = 38.383572; // Leaflet map default latitude - Set to University of Alicante
         this.longitude = -0.512019; // Leaflet map default longitude - Set to University of Alicante
         this.zoom = 16; // Leaflet map zoom level - Level 16 in University of Alicante works like a charm in my laptop
@@ -30,13 +31,13 @@ var mejorua = mejorua || {};
             DONE: 'issueStateDone'
         }
         this.stateText = {
-            PENDING : "Pendiente",
+            PENDING: "Pendiente",
             INPROGRESS: "En proceso",
-            DONE : "Hecho"
+            DONE: "Hecho"
         }
 
         //Icon associated with a state. INITIALIZED AT initIcon()
-        this.stateIcon = undefined; 
+        this.stateIcon = undefined;
 
         /****************************************************************************************************************
 
@@ -50,9 +51,10 @@ var mejorua = mejorua || {};
             _.bindAll(this, "addGeoJSONpointToLayer");
             _.bindAll(this, "addGeoJSONonEachFeature");
             _.bindAll(this, "onModelUpdated");
-            
+
             //Init Leaflet Map
             this.map = L.map(this.mapId).setView([this.latitude, this.longitude], this.zoom);
+            this.map.on('click', this.addDraggableMarker);
 
             //Load OSM map tiles + attribution
             L.tileLayer(this.tileOSMURL, {
@@ -70,35 +72,35 @@ var mejorua = mejorua || {};
         this.initIcons = function initIcon() {
             //22 62
             iconSize = [22, 31];
-            iconAnchor = [(iconSize[0]/2), iconSize[1]];
+            iconAnchor = [(iconSize[0] / 2), iconSize[1]];
             popupAnchor = [0, -iconSize[1]];
 
             this.iconDone = L.icon({
                 iconUrl: this.pathToImages + 'icon_done.png',
                 shadowUrl: this.pathToImages + 'marker-shadow.png',
-                iconAnchor:   iconAnchor,
-                popupAnchor:  popupAnchor,
-                iconSize:     iconSize
+                iconAnchor: iconAnchor,
+                popupAnchor: popupAnchor,
+                iconSize: iconSize
             });
             this.iconInProgress = L.icon({
                 iconUrl: this.pathToImages + 'icon_inProgress.png',
                 shadowUrl: this.pathToImages + 'marker-shadow.png',
-                iconAnchor:   iconAnchor,
-                popupAnchor:  popupAnchor,
-                iconSize:     iconSize
+                iconAnchor: iconAnchor,
+                popupAnchor: popupAnchor,
+                iconSize: iconSize
             });
             this.iconPending = L.icon({
                 iconUrl: this.pathToImages + 'icon_pending.png',
                 shadowUrl: this.pathToImages + 'marker-shadow.png',
-                iconAnchor:   iconAnchor,
-                popupAnchor:  popupAnchor,
-                iconSize:     iconSize
+                iconAnchor: iconAnchor,
+                popupAnchor: popupAnchor,
+                iconSize: iconSize
             });
 
             this.stateIcon = {
-                PENDING : this.iconPending,
+                PENDING: this.iconPending,
                 INPROGRESS: this.iconInProgress,
-                DONE : this.iconDone
+                DONE: this.iconDone
             }
         }
 
@@ -112,33 +114,39 @@ var mejorua = mejorua || {};
         }
 
         this.addGeoJSONpointToLayer = function addGeoJSONpointToLayer(feature, latlng) {
-
             var icon = "";
-
-            /*
-            switch (feature.properties.state) {
-                case 'pending': icon = this.iconPending; break;
-                case 'inProgress': icon = this.iconInProgress; break;
-                case 'done': icon = this.iconDone; break;
-            }
-            */
-
             icon = this.stateIcon[feature.properties.state];
-    
-            return L.marker(latlng, {icon: icon});
+            return L.marker(latlng, {
+                icon: icon
+            });
         }
 
         this.addGeoJSONonEachFeature = function addGeoJSONonEachFeature(feature, layer) {
             if (feature.properties) {
-                popupText = '<p>' + 
-                                this.stateText[feature.properties.state] + '<br/>' +
-                                feature.properties.action + '<br/>' +
-                                feature.properties.term + '<br/>' +
-                            '<a href="javascript:mejorua.app.onShowIssueDetail(' + feature.properties.id + ')" class="btn btn-xs btn-primary">Ver detalles</a>' +
-                            '</p>';
-                layer.bindPopup(popupText, {className: this.stateCSS[feature.properties.state]});
+                popupText = '<p>' +
+                    this.stateText[feature.properties.state] + '<br/>' +
+                    feature.properties.action + '<br/>' +
+                    feature.properties.term + '<br/>' +
+                    '<a href="javascript:mejorua.app.onShowIssueDetail(' + feature.properties.id + ')" class="btn btn-xs btn-primary">Ver detalles</a>' +
+                    '</p>';
+                layer.bindPopup(popupText, {
+                    className: this.stateCSS[feature.properties.state]
+                });
             }
         }
+
+        //http://stackoverflow.com/questions/18575722/leaflet-js-set-marker-on-click-update-postion-on-drag
+        this.addDraggableMarker = function addDraggableMarker(e) {
+            console.log("mejorua.Map.addDraggableMarker(e:%O)", e);
+
+            self.newIssueMarker = new L.marker(e.latlng, {
+                id: 'newIssueMarker',
+                icon: self.iconPending,
+                draggable: 'true'
+            });
+            //self.newIssueMarker.on('dragend', self.onMarkerDragEnd);
+            self.map.addLayer(self.newIssueMarker);
+        };
 
         /****************************************************************************************************************
 
@@ -152,6 +160,22 @@ var mejorua = mejorua || {};
             this.addGeoJSON(geoJSON);
         }
 
+        this.onLoadStateNewIssue = function onNewIssueMarkerClick() {
+            alert("Lets put a new issue");
+        }
+
+        /*
+        this.onMarkerDragEnd = function onMarkerDragEnd(e) {
+            console.log("mejorua.Map.newIssueMarker:dragend(event:%O)", e);
+                var marker = e.target;
+                var position = marker.getLatLng();
+                marker.setLatLng([position], {
+                    id: marker.options.id,
+                    draggable: 'true'
+                }).bindPopup(position).update();
+        }
+        */
+
         /****************************************************************************************************************
 
             DEBUG
@@ -163,7 +187,7 @@ var mejorua = mejorua || {};
 
             //UA: 38.383572, -0.512019
             //Torrevieja Glorieta: 37.977483, -0.682846
-        
+
             this.locations = [];
 
             this.locations.aulario2 = {
@@ -205,7 +229,7 @@ var mejorua = mejorua || {};
             feature = this.DEBUGnewFeature('bibliotecaGeneral', 'done');
             this.addGeoJSON(feature);
 
-            feature = this.DEBUGnewFeature('eps1','inProgress');
+            feature = this.DEBUGnewFeature('eps1', 'inProgress');
             this.addGeoJSON(feature);
 
             //var marker = L.marker([this.locations['aulario2'].latitude, this.locations['aulario2'].longitude], {icon: this.icon}).addTo(this.map);

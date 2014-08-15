@@ -3,6 +3,6 @@ body {
   padding-bottom: 10px;
 }
 
-html, body, .row, .container, .fill {
+html, body, .container, .fill {
     height: 100%;
 }

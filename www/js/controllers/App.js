@@ -10,9 +10,11 @@ mejorua.controllers = mejorua.controllers || {};
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        var self = this;
         this.models = {};
         this.views = {};
 
+        this.page = undefined;
         this.api = undefined;
         this.map = undefined;
 
@@ -23,9 +25,13 @@ mejorua.controllers = mejorua.controllers || {};
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         this.init = function init() {
             console.log("controllers.App.init()");
-
+  
             this.api = new mejorua.Api();
             this.map = new mejorua.Map();
+
+            this.page = new mejorua.controllers.Page();
+            this.setupPages();
+            this.page.init();
 
             this.views.issueDetail = new mejorua.views.IssueDetail();
 
@@ -38,11 +44,13 @@ mejorua.controllers = mejorua.controllers || {};
             );
             var fetchPromise = this.models.issues.myFetch();
 
+
+
             //this.DEBUGMap();
             //this.DEBUGIssueCollection();
             //this.DEBUGIssueModel(this.api.url);
-            _.bindAll(this, "DEBUGIssueDetail");
-            fetchPromise.done(this.DEBUGIssueDetail);
+            //_.bindAll(this, "DEBUGIssueDetail");
+            //fetchPromise.done(this.DEBUGIssueDetail);
 
             //TODO - REFACTOR - to controller.restClient or view.restClient
             /////////////////////////////////////////////////////////////////////////
@@ -64,6 +72,65 @@ mejorua.controllers = mejorua.controllers || {};
             //Page API REST Client - END
             ///////////////////////////////////////////////////////////////////////////
 
+        }
+
+        this.setupPages = function setupPages() {
+            var pageMap = {
+                id: "pageMap",
+                state: {
+                    default: {
+                        id: 'default',
+                        title: "Mejor UA - Mapa",
+                        url: "mapa"
+                    },
+                    newIssue: {
+                        id: 'newIssue',
+                        title: "Mejor UA - Mapa - Notificar incidencia",
+                        url: "mapa/notificarIncidencia",
+                        onLoad: this.map.onLoadStateNewIssue
+                    }
+                }
+            }
+            pageMap.actualState = pageMap.state['default'];
+
+            var pageIssueDetail = {
+                id: "pageIssueDetail",
+                state: {
+                    default: {
+                        id: 'default',
+                        title: "Mejor UA - Detalles incidencia",
+                        url: "detallesIncidencia"
+                    }
+                }
+            }
+            pageIssueDetail.actualState = pageIssueDetail.state['default'];
+
+            var pageRESTClient = {
+                id: "pageRESTClient",
+                state: {
+                    default: {
+                        id: 'default',
+                        title: "Mejor UA - Cliente REST",
+                        url: "clienteREST"
+                    }
+                }
+            }
+            pageRESTClient.actualState = pageRESTClient.state['default'];
+
+            this.page.add(pageMap);
+            this.page.add(pageIssueDetail);
+            this.page.add(pageRESTClient);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// EVENTS
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.onNewIssueMarkerClick = function onNewIssueMarker() {
+            self.page.show('pageMap');
+            self.map.onNewIssueMarkerClick();
         }
 
         this.onShowIssueDetail = function onShowIssueDetail(id) {
@@ -228,7 +295,7 @@ mejorua.controllers = mejorua.controllers || {};
 
         this.DEBUGIssueDetail = function DEBUGIssueDetail() {
 
-            this.views.issueDetail.update(this.models.issues.get(1).attributes);
+            this.views.issueDetail.update(this.models.issues.models[0].attributes);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
