@@ -33,7 +33,7 @@
 
 <body>
 
-	<!---------------------------------------------------------------------------------------------------------------------------
+	<!--NAVBAR-------------------------------------------------------------------------------------------------------------------------
 
 	NAVBAR
 
@@ -85,10 +85,26 @@
 ---------------------------------------------------------------------------------------------------------------------------->
 
 
-	<div id="pageMap" class="container">
+	<div id="pageMap" class="container fill95">
+	
+		<div class="row">
+			<div class="col-md-offset-1 col-md-10">
+			
+				<div class="btn-group btn-group-justified">
+					<a href="javascript:mejorua.app.map.setFloor('basement')" class="btn btn-default" role="button">Sotano</a>
+					<a href="javascript:mejorua.app.map.setFloor('ground')" class="btn btn-default" role="button">Planta baja</a>
+					<a href="javascript:mejorua.app.map.setFloor('first')" class="btn btn-default" role="button">Planta primera</a>
+					<a href="javascript:mejorua.app.map.setFloor('second')" class="btn btn-default" role="button">Planta segunda</a>
+					<a href="javascript:mejorua.app.map.setFloor('third')" class="btn btn-default" role="button">Planta tercera</a>
+					<a href="javascript:mejorua.app.map.setFloor('fourth')" class="btn btn-default" role="button">Planta cuarta</a>
+				</div>
+		
+			</div><!-- /col -->
+		</div><!-- /row -->
+		
 		<div class="fill row">
-			<div class="fill col-md-offset-1 col-md-10">
-				<div id="map" class="fill"></div>
+			<div class="fill95 col-md-offset-1 col-md-10">
+				<div id="map"class="fill"></div>
 			</div>
 			<!-- /col -->
 		</div>
@@ -411,17 +427,16 @@
 ---------------------------------------------------------------------------------------------------------------------------->
 
 	<div id="pageIssueCreate" class="container" style="display:none">
-		<div class="row">
+		<div class="fill row">
 			<div class="fill col-md-offset-1 col-md-10">
-
-
-
+				<div id="map_issueCreate" class="fill"></div>
 			</div>
 			<!-- /col -->
 		</div>
 		<!-- /row -->
 	</div>
 	<!-- /container pageIssueCreate -->
+
 
 	<!---------------------------------------------------------------------------------------------------------------------------
 

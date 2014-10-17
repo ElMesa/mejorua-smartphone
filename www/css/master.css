@@ -6,3 +6,7 @@ body {
 html, body, .container, .fill {
     height: 100%;
 }
+
+.fill95 {
+	height: 95%;
+}
