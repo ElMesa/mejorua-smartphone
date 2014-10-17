@@ -6,7 +6,7 @@ mejorua.views = mejorua.views || {};
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
-        ///	ATRIBUTTES
+        /// ATRIBUTTES
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         this.model = undefined;
@@ -16,36 +16,36 @@ mejorua.views = mejorua.views || {};
         this.drawId = 'issueDetail';
 
         this.stateIcon = {
-        	PENDING: 'img/map/icon_pending.png',
-        	INPROGRESS: 'img/map/icon_inProgress.png',
-        	DONE: 'img/map/icon_done.png'
+            PENDING: 'img/map/icon_pending.png',
+            INPROGRESS: 'img/map/icon_inProgress.png',
+            DONE: 'img/map/icon_done.png'
         }
         this.stateCSS = {
-        	PENDING: 'issueStatePendingBackground',
-        	INPROGRESS: 'issueStateInProgressBackground',
-        	DONE: 'issueStateDoneBackground'
+            PENDING: 'issueStatePendingBackground',
+            INPROGRESS: 'issueStateInProgressBackground',
+            DONE: 'issueStateDoneBackground'
         }
         this.stateText = {
-        	PENDING: 'Acción pendiente',
-        	INPROGRESS: 'Acción en progreso',
-        	DONE: 'Acción finalizada'
+            PENDING: 'Acción pendiente',
+            INPROGRESS: 'Acción en progreso',
+            DONE: 'Acción finalizada'
         }
 
         this.evenTypeText = {
-        	CREATE: 'Creada la incidencia',
-        	STATE_CHANGE_PENDING: 'Cambiado estado a pendiente',
-        	STATE_CHANGE_INPROGRESS: 'Cambiado estado a en progreso',
-        	STATE_CHANGE_DONE: 'Cambiado estado a finalizada'
+            CREATE: 'Creada la incidencia',
+            STATE_CHANGE_PENDING: 'Cambiado estado a pendiente',
+            STATE_CHANGE_INPROGRESS: 'Cambiado estado a en progreso',
+            STATE_CHANGE_DONE: 'Cambiado estado a finalizada'
         }
         this.evenTypeBackgroundCSS = {
-        	STATE_CHANGE_PENDING: 'issueStatePendingBackground',
-        	STATE_CHANGE_INPROGRESS: 'issueStateInProgressBackground',
-        	STATE_CHANGE_DONE: 'issueStateDoneBackground'
+            STATE_CHANGE_PENDING: 'issueStatePendingBackground',
+            STATE_CHANGE_INPROGRESS: 'issueStateInProgressBackground',
+            STATE_CHANGE_DONE: 'issueStateDoneBackground'
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
-        ///	METHODS
+        /// METHODS
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         this.init = function init() {
@@ -58,7 +58,7 @@ mejorua.views = mejorua.views || {};
         this.update = function update(model) {
             console.log("views.IssueDetail.update(model:%O)", model);
 
-            if(model) this.model = model;
+            if (model) this.model = model;
 
             this.model.viewStateIcon = this.stateIcon[this.model.state];
             this.model.viewStateCSS = this.stateCSS[this.model.state];
@@ -86,7 +86,7 @@ mejorua.views = mejorua.views || {};
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
-        ///	SELF INITILIZATION
+        /// SELF INITILIZATION
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         this.init();

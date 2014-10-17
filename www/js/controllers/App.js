@@ -13,6 +13,7 @@ mejorua.controllers = mejorua.controllers || {};
         var self = this;
         this.models = {};
         this.views = {};
+        this.controllers = {};
 
         this.page = undefined;
         this.api = undefined;
@@ -28,12 +29,13 @@ mejorua.controllers = mejorua.controllers || {};
   
             this.api = new mejorua.Api();
             this.map = new mejorua.Map();
-
             this.page = new mejorua.controllers.Page();
+    
+            this.views.issueDetail = new mejorua.views.IssueDetail();
+            this.controllers.issueDetail = new mejorua.controllers.IssueDetail();
+
             this.setupPages();
             this.page.init();
-
-            this.views.issueDetail = new mejorua.views.IssueDetail();
 
             // Backbone Collection - Issues
             this.models.issues = new mejorua.models.IssueCollection(
@@ -42,9 +44,10 @@ mejorua.controllers = mejorua.controllers || {};
                     map: this.map
                 }
             );
-            var fetchPromise = this.models.issues.myFetch();
-
-
+            var issuesFetchedPromise = this.models.issues.myFetch();
+            issuesFetchedPromise.done(function() { 
+                self.controllers.issueDetail.init(self.models.issues, self.views.issueDetail);
+            });
 
             //this.DEBUGMap();
             //this.DEBUGIssueCollection();
@@ -99,7 +102,8 @@ mejorua.controllers = mejorua.controllers || {};
                     default: {
                         id: 'default',
                         title: "Mejor UA - Detalles incidencia",
-                        url: "detallesIncidencia"
+                        url: "detallesIncidencia",
+                        onLoad: this.controllers.issueDetail.onLoadStateDefault
                     }
                 }
             }
@@ -133,6 +137,7 @@ mejorua.controllers = mejorua.controllers || {};
             self.map.onNewIssueMarkerClick();
         }
 
+        //TODO - REFACTOR - Create controller.IssueDetail and add onLoadStateDefault there instead of in the view
         this.onShowIssueDetail = function onShowIssueDetail(id) {
 
         	this.views.issueDetail.update(this.models.issues.get(id).attributes);

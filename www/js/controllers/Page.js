@@ -113,7 +113,7 @@ mejorua.controllers = mejorua.controllers || {};
             return transitionEnd;
         }
 
-        this.show = function show(targetPageId, targetState, shouldPushBrowserHistory) {
+        this.show = function show(targetPageId, targetState, data, shouldPushBrowserHistory) {
 
             var targetPage = this.pages[targetPageId];
             if (targetState == undefined) targetState = 'default';
@@ -133,7 +133,7 @@ mejorua.controllers = mejorua.controllers || {};
 
                         //TODO - Page - ¿Maybe prepare state before transition? And leave further animations post page transition
                         var onLoadState = this.pages[targetPageId].state[targetState].onLoad;
-                        if (onLoadState != undefined) onLoadState();
+                        if (onLoadState != undefined) onLoadState(data);
 
                         //Check if transition to page is needed
                         if (isDiferentPage) {
@@ -197,9 +197,9 @@ mejorua.controllers = mejorua.controllers || {};
                 //document.getElementById("content").innerHTML = e.state.html;
                 var targetPage = JSON.parse(e.state.page);
                 console.log("mejorua.controllers.Page - window.onpopstate() - show(%O)", targetPage.id);
-                self.show(targetPage.id, targetPage.actualState.id, false);
+                self.show(targetPage.id, targetPage.actualState.id, undefined, false);
             } else {
-                self.show(self.defaultPage.id, 'default', false);
+                self.show(self.defaultPage.id, 'default', undefined, false);
             }
         };
 

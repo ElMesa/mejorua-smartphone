@@ -127,7 +127,7 @@ var mejorua = mejorua || {};
                     this.stateText[feature.properties.state] + '<br/>' +
                     feature.properties.action + '<br/>' +
                     feature.properties.term + '<br/>' +
-                    '<a href="javascript:mejorua.app.onShowIssueDetail(' + feature.properties.id + ')" class="btn btn-xs btn-primary">Ver detalles</a>' +
+                    '<a href="javascript:mejorua.app.page.show(\'pageIssueDetail\', undefined, {issueId: ' + feature.properties.id + '}, true)" class="btn btn-xs btn-primary">Ver detalles</a>' +
                     '</p>';
                 layer.bindPopup(popupText, {
                     className: this.stateCSS[feature.properties.state]
