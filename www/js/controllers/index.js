@@ -5,10 +5,10 @@ $(document).ready(function() {
     mejorua.app = new mejorua.controllers.App();
 
     //TODO - REFACTOR - Move to a controller/header.js
-    $('.navbar-collapse a').on('click', function() {
-        if ($('.navbar-collapse').hasClass('in')) {
+    $('#navMain .navbar-collapse a').on('click', function() {
+        if ($('#navMain .navbar-collapse').hasClass('in')) {
             console.log('.navbar-collapse.in a CKLICK');
-            $(".navbar-toggle").click();
+            $("#navMain .navbar-toggle").click();
         }
     });
 

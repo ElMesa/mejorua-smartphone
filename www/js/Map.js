@@ -8,15 +8,22 @@ var mejorua = mejorua || {};
 
         ****************************************************************************************************************/
         var self = this;
+        
+        this.floorSelector = new mejorua.views.MapFloorSelector();
+        
         this.map = undefined; //Leafleat Map
         this.geoJSON = undefined; //GeoJSON to display
         this.newIssueMarker = undefined;
 
         this.pathToImages = 'img/map/';
-
+        
+        this.state = {};
+        this.state.list = ['showIssues',
+                           'notifyIssue'];
+        this.state.default = 'showIssues';
+        this.state.actual = this.state.default;
 
         this.mapId = 'map';
-
 
         this.latitude = 38.383572; // Leaflet map default latitude - Set to University of Alicante
         this.longitude = -0.512019; // Leaflet map default longitude - Set to University of Alicante
@@ -50,31 +57,32 @@ var mejorua = mejorua || {};
         this.tiles.url.sigua.floor.third = {};
         this.tiles.url.sigua.floor.fourth = {};
         
+        //SIGUA tiles for codes are ignored because right now aren't used
         this.tiles.url.sigua.background = 'http://www.sigua.ua.es/cache/tms/1.0.0/BASE/webmercator_mod/{z}/{x}/{y}.png';
         
         this.tiles.url.sigua.floor.basement.background = 'http://www.sigua.ua.es/cache/tms/1.0.0/PS_D_TEMA/webmercator_mod/{z}/{x}/{y}.png';
         this.tiles.url.sigua.floor.basement.deno = 'http://www.sigua.ua.es/cache/tms/1.0.0/PS_T_DENO/webmercator_mod/{z}/{x}/{y}.png';
-        this.tiles.url.sigua.floor.basement.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/PS_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
+        //this.tiles.url.sigua.floor.basement.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/PS_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
         
         this.tiles.url.sigua.floor.ground.background = 'http://www.sigua.ua.es/cache/tms/1.0.0/PB_D_TEMA/webmercator_mod/{z}/{x}/{y}.png';
         this.tiles.url.sigua.floor.ground.deno = 'http://www.sigua.ua.es/cache/tms/1.0.0/PB_T_DENO/webmercator_mod/{z}/{x}/{y}.png';
-        this.tiles.url.sigua.floor.ground.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/PB_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
+        //this.tiles.url.sigua.floor.ground.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/PB_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
         
         this.tiles.url.sigua.floor.first.background = 'http://www.sigua.ua.es/cache/tms/1.0.0/P1_D_TEMA/webmercator_mod/{z}/{x}/{y}.png';
         this.tiles.url.sigua.floor.first.deno = 'http://www.sigua.ua.es/cache/tms/1.0.0/P1_T_DENO/webmercator_mod/{z}/{x}/{y}.png';
-        this.tiles.url.sigua.floor.first.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P1_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
+        //this.tiles.url.sigua.floor.first.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P1_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
         
         this.tiles.url.sigua.floor.second.background = 'http://www.sigua.ua.es/cache/tms/1.0.0/P2_D_TEMA/webmercator_mod/{z}/{x}/{y}.png';
         this.tiles.url.sigua.floor.second.deno = 'http://www.sigua.ua.es/cache/tms/1.0.0/P2_T_DENO/webmercator_mod/{z}/{x}/{y}.png';
-        this.tiles.url.sigua.floor.second.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P2_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
+        //this.tiles.url.sigua.floor.second.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P2_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
         
         this.tiles.url.sigua.floor.third.background = 'http://www.sigua.ua.es/cache/tms/1.0.0/P3_D_TEMA/webmercator_mod/{z}/{x}/{y}.png';
         this.tiles.url.sigua.floor.third.deno = 'http://www.sigua.ua.es/cache/tms/1.0.0/P3_T_DENO/webmercator_mod/{z}/{x}/{y}.png';
-        this.tiles.url.sigua.floor.third.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P3_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
+        //this.tiles.url.sigua.floor.third.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P3_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
         
         this.tiles.url.sigua.floor.fourth.background = 'http://www.sigua.ua.es/cache/tms/1.0.0/P4_D_TEMA/webmercator_mod/{z}/{x}/{y}.png';
         this.tiles.url.sigua.floor.fourth.deno = 'http://www.sigua.ua.es/cache/tms/1.0.0/P4_T_DENO/webmercator_mod/{z}/{x}/{y}.png';
-        this.tiles.url.sigua.floor.fourth.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P4_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
+        //this.tiles.url.sigua.floor.fourth.codigo = 'http://www.sigua.ua.es/cache/tms/1.0.0/P4_T_CODIGO/webmercator_mod/{z}/{x}/{y}.png';
         
         this.layer = {};
         this.layer.group = {};
@@ -125,6 +133,8 @@ var mejorua = mejorua || {};
             this.initLayers();
             
             this.initIcons();
+            
+            this.setFloor(this.floorDefault);
 
             $(this).on('modelUpdated', this.onModelUpdated);
 
@@ -166,7 +176,7 @@ var mejorua = mejorua || {};
             
             //Add default floor layer group to the map
             //this.layer.group[this.layer.group.default].addTo(this.map);
-            this.setFloor(this.floorDefault);
+            
         }
 
         this.initIcons = function initIcon() {
@@ -280,14 +290,16 @@ var mejorua = mejorua || {};
         };
         
         this.setFloor = function setFloor(newFloor) {
+        	console.log('mejorua.Map.setFloor(%O)', newFloor);
+        	
+        	//Update view - Floor selector
+        	this.floorSelector.setFloor(newFloor);
+        	
         	if(this.floor != undefined && this.floor != null) this.map.removeLayer(this.layer.group[this.floor]);
         	this.map.addLayer(this.layer.group[newFloor]);
         	this.floor = newFloor;
         	
-        	console.log('map.setFloor(%O)', newFloor);
-        	this.map.eachLayer(function (layer) {
-        	    console.log(layer);
-        	});
+        	//this.debug.showLayers();
         };
 
         /****************************************************************************************************************
@@ -324,6 +336,14 @@ var mejorua = mejorua || {};
 
         ****************************************************************************************************************/
 
+        this.debug = {};
+        
+        this.debug.showLayers = function DEBUGshowLayers() {
+        	this.map.eachLayer(function (layer) {
+        	    console.log(layer);
+        	});
+        }
+        
         this.DEBUGpopulateLocations = function DEBUGpopulateLocations() {
             console.log("mejorua.Map.DEBUGpopulateLocations()");
 

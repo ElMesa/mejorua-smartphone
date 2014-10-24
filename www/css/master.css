@@ -1,5 +1,6 @@
 body {
-  padding-top: 70px;
+  /*padding-top: 70px;*/
+  padding-top: 50px;
   padding-bottom: 10px;
 }
 
@@ -9,4 +10,8 @@ html, body, .container, .fill {
 
 .fill95 {
 	height: 95%;
+}
+
+.fill90 {
+	height: 90%;
 }
