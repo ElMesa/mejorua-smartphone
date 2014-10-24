@@ -2,11 +2,12 @@ var mejorua = mejorua || {};
 (function() {
     mejorua.Map = function Map() {
 
-        /****************************************************************************************************************
-
-            ATRIBUTES
-
-        ****************************************************************************************************************/
+    	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// ATTRIBUTES
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    	
         var self = this;
         
         this.floorSelector = new mejorua.views.MapFloorSelector();
@@ -21,10 +22,15 @@ var mejorua = mejorua || {};
         this.state.list = ['showIssues',
                            'notifyIssue'];
         this.state.default = 'showIssues';
-        this.state.actual = this.state.default;
-
+        this.state.actual = undefined;
+        this.state.showIssues = {};
+        this.state.showIssues.onLoad = undefined;
+        this.state.showIssues.onUnload = undefined;
+        this.state.notifyIssue = {};
+        this.state.notifyIssue.onLoad = undefined;
+        this.state.notifyIssue.onUnload = undefined;
+        
         this.mapId = 'map';
-
         this.latitude = 38.383572; // Leaflet map default latitude - Set to University of Alicante
         this.longitude = -0.512019; // Leaflet map default longitude - Set to University of Alicante
         this.zoom = 16; // Leaflet map zoom level - Level 16 in University of Alicante works like a charm in my laptop
@@ -95,6 +101,11 @@ var mejorua = mejorua || {};
         this.layer.floor.second = {};
         this.layer.floor.third = {};
         this.layer.floor.fourth = {};
+        this.layer.issues = undefined;
+        this.layer.notifyIssue = undefined;
+        
+        this.marker = {};
+        this.marker.notifyIssue = undefined;
         
         this.floorDefault = 'ground';
         this.floor = undefined;
@@ -113,11 +124,11 @@ var mejorua = mejorua || {};
         //Icon associated with a state. INITIALIZED AT initIcon()
         this.stateIcon = undefined;
 
-        /****************************************************************************************************************
-
-            METHODS
-
-        ****************************************************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// METHODS - INIT
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         this.init = function init() {
             console.log("mejorua.Map.init()");
@@ -128,13 +139,14 @@ var mejorua = mejorua || {};
 
             //Init Leaflet Map
             this.map = L.map(this.mapId).setView([this.latitude, this.longitude], this.zoom);
-            this.map.on('click', this.addDraggableMarker);
 
             this.initLayers();
             
             this.initIcons();
             
             this.setFloor(this.floorDefault);
+            
+            this.setState(this.state.default);
 
             $(this).on('modelUpdated', this.onModelUpdated);
 
@@ -214,6 +226,12 @@ var mejorua = mejorua || {};
             }
         }
         
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// METHODS - MAP INTERNALS
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         this.newLayer = function addLayer(override) {
         	
         	//Default config
@@ -248,10 +266,21 @@ var mejorua = mejorua || {};
         this.addGeoJSON = function addGeoJSON(geoJSON) {
             console.log("mejorua.Map.addGeoJSON(geoJSON:%O)", geoJSON);
 
-            L.geoJson(geoJSON, {
+            //Remove old issues layer
+            if(this.layer.issues) this.map.removeLayer(this.layer.issues);
+            
+            //Get the updated layer
+            var issues = L.geoJson(geoJSON, {
                 pointToLayer: this.addGeoJSONpointToLayer,
                 onEachFeature: this.addGeoJSONonEachFeature
-            }).addTo(this.map);
+            });
+            
+            this.layer.issues = issues;
+            
+            //Add it to the map if in "showIssues" state
+            if(this.state.actual == 'showIssues') {
+            	this.map.addLayer(issues);
+            }
         }
 
         this.addGeoJSONpointToLayer = function addGeoJSONpointToLayer(feature, latlng) {
@@ -277,17 +306,54 @@ var mejorua = mejorua || {};
         }
 
         //http://stackoverflow.com/questions/18575722/leaflet-js-set-marker-on-click-update-postion-on-drag
-        this.addDraggableMarker = function addDraggableMarker(e) {
-            console.log("mejorua.Map.addDraggableMarker(e:%O)", e);
+        this.addNotifyIssueMarker = function addNotifyIssueMarker(e) {
+            console.log("mejorua.Map.addNotifyIssueMarker(e:%O)", e);
 
-            self.newIssueMarker = new L.marker(e.latlng, {
-                id: 'newIssueMarker',
-                icon: self.iconPending,
-                draggable: 'true'
-            });
-            //self.newIssueMarker.on('dragend', self.onMarkerDragEnd);
-            self.map.addLayer(self.newIssueMarker);
+            if(!self.marker.notifyIssue) {
+            	
+	            var marker = new L.marker(e.latlng, {
+	                id: 'notifyIssueMarker',
+	                icon: self.iconPending,
+	                draggable: 'true'
+	            });
+	            
+	            marker.bindPopup("Puede mejorar la precisión de la incidencia haciendo click sobre el mapa");
+	            
+	            self.marker.notifyIssue = marker;
+	            self.map.addLayer(self.marker.notifyIssue);
+	            marker.openPopup();
+	            
+            } else {
+            	self.marker.notifyIssue.setLatLng(e.latlng);
+            }
         };
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// METHODS - SETTER'S
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        this.setState = function setState(newState) {
+        	console.log('mejorua.Map.setState(%O)', newState);
+        	        	
+        	switch(newState) {
+	            case 'showIssues':
+	            	this.state.actual = 'showIssues';
+	            	this.state.notifyIssue.onUnload();
+	            	this.state.showIssues.onLoad();
+	                break;
+	                
+	            case 'notifyIssue':
+	            	this.state.actual = 'notifyIssue';
+	            	this.state.showIssues.onUnload();
+	            	this.state.notifyIssue.onLoad();
+	                break;
+	                
+	            default:
+	            	console.log('mejorua.Map.setState(%O) - ERROR - Unknown state', newState);
+	        } 
+        }
         
         this.setFloor = function setFloor(newFloor) {
         	console.log('mejorua.Map.setFloor(%O)', newFloor);
@@ -301,12 +367,60 @@ var mejorua = mejorua || {};
         	
         	//this.debug.showLayers();
         };
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// STATES
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        /****************************************************************************************************************
-
-            EVENTS
-
-        ****************************************************************************************************************/
+        this.state.showIssues.onLoad = function showIssues_onLoad() {
+        	if(self.layer.issues) {
+	        	if(!self.map.hasLayer(self.layer.issues)) {
+	        		self.map.addLayer(self.layer.issues);
+	        	}
+        	}
+        }
+        
+        this.state.showIssues.onUnload = function showIssues_onUnload() {
+        	if(self.layer.issues) {
+	        	if(self.map.hasLayer(self.layer.issues)) {
+	        		self.map.removeLayer(self.layer.issues);
+	        	}
+        	}
+        }
+        
+        this.state.notifyIssue.onLoad = function notifyIssue_onLoad() {
+        	var $controls = $('#' + 'map_notifyIssue_controls');
+        	$controls.fadeIn();
+        	
+        	self.map.on('click', self.addNotifyIssueMarker);
+        	
+        	if(self.marker.notifyIssue) {
+	        	if(!self.map.hasLayer(self.marker.notifyIssue)) {
+	        		self.map.addLayer(self.marker.notifyIssue);
+	        	}
+        	}
+        }
+        
+        this.state.notifyIssue.onUnload = function notifyIssue_onUnload() {
+        	var $controls = $('#' + 'map_notifyIssue_controls');
+        	$controls.fadeOut();
+        	
+        	self.map.off('click', self.addNotifyIssueMarker);
+        	
+        	if(self.marker.notifyIssue) {
+	        	if(self.map.hasLayer(self.marker.notifyIssue)) {
+	        		self.map.removeLayer(self.marker.notifyIssue);
+	        	}
+        	}
+        }
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// EVENTS
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         this.onModelUpdated = function onModelUpdated(event, geoJSON) {
             console.log("mejorua.Map.onModelUpdated(geoJSON:%O)", geoJSON);
@@ -315,7 +429,8 @@ var mejorua = mejorua || {};
         }
 
         this.onLoadStateNewIssue = function onNewIssueMarkerClick() {
-            alert("Lets put a new issue");
+        	console.log("mejorua.Map.onNewIssueMarkerClick()");
+        	self.setState('notifyIssue');
         }
 
         /*
@@ -330,11 +445,11 @@ var mejorua = mejorua || {};
         }
         */
 
-        /****************************************************************************************************************
-
-            DEBUG
-
-        ****************************************************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// DEBUG
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         this.debug = {};
         
@@ -414,11 +529,11 @@ var mejorua = mejorua || {};
             return geojsonFeature;
         }
 
-        /****************************************************************************************************************
-
-            AUTOINITIALIZATION (SIMILAR TO CONSTRUCTOR CALL ON NEW Map CLASS OBJECT)
-
-        ****************************************************************************************************************/
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// SELF INITIALIZATION
+        ///
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         this.init();
     };
