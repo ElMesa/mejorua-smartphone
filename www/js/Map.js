@@ -1,6 +1,7 @@
 var mejorua = mejorua || {};
+
 (function() {
-    mejorua.Map = function Map() {
+    mejorua.Map = function Map(issueDetailModel, notifyIssueModel) {
 
     	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
@@ -9,6 +10,11 @@ var mejorua = mejorua || {};
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     	
         var self = this;
+        
+        this.model = {};
+        this.model.issues = undefined;
+        this.model.issueDetail = undefined;
+        this.model.notifyIssue = undefined;
         
         this.floorSelector = new mejorua.views.MapFloorSelector();
         
@@ -130,8 +136,11 @@ var mejorua = mejorua || {};
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        this.init = function init() {
+        this.init = function init(issueDetailModel, notifyIssueModel) {
             console.log("mejorua.Map.init()");
+            
+            this.model.issueDetail = issueDetailModel;
+            this.model.notifyIssue = notifyIssueModel;
 
             _.bindAll(this, "addGeoJSONpointToLayer");
             _.bindAll(this, "addGeoJSONonEachFeature");
@@ -297,7 +306,9 @@ var mejorua = mejorua || {};
                     this.stateText[feature.properties.state] + '<br/>' +
                     feature.properties.action + '<br/>' +
                     feature.properties.term + '<br/>' +
-                    '<a href="javascript:mejorua.app.page.show(\'pageIssueDetail\', undefined, {issueId: ' + feature.properties.id + '}, true)" class="btn btn-xs btn-primary">Ver detalles</a>' +
+                    //'<a href="javascript:mejorua.app.page.show(\'pageIssueDetail\', undefined, {issueId: ' + feature.properties.id + '}, true)" class="btn btn-xs btn-primary">Ver detalles</a>' +
+                    '<a href="javascript:mejorua.app.map.state.showIssues.showIssueDetail(' + feature.properties.id + ')" class="btn btn-xs btn-primary">Ver detalles</a>' +
+                    
                     '</p>';
                 layer.bindPopup(popupText, {
                     className: this.stateCSS[feature.properties.state]
@@ -390,6 +401,11 @@ var mejorua = mejorua || {};
         	}
         }
         
+        this.state.showIssues.showIssueDetail = function showIssues_showIssueDetail(issueId) {
+        	self.model.issueDetail.set(self.model.issues.get(issueId).attributes);
+        	mejorua.app.page.show('pageIssueDetail', undefined, issueId, true);
+        }
+        
         this.state.notifyIssue.onLoad = function notifyIssue_onLoad() {
         	var $controls = $('#' + 'map_notifyIssue_controls');
         	$controls.fadeIn();
@@ -416,16 +432,39 @@ var mejorua = mejorua || {};
         	}
         }
         
+        this.state.notifyIssue.confirm = function notifyIssue_confirm() {
+        	console.log('mejorua.Map.state.notifyIssue.confirm()');
+        	
+        	if(self.marker.notifyIssue) {
+        		var position = self.marker.notifyIssue.getLatLng();
+        		self.model.notifyIssue.set({
+        			latitude: position.lat,
+        			longitude: position.lng
+        		});
+        		mejorua.app.page.show('pageNotifyIssue', undefined, undefined, true);
+        		self.setState('showIssues');
+        		
+        	} else {
+        		//TODO - REFACTOR - To js/toastr.js toaster.init() //Or simply App.js
+        		toastr.options = {
+        			"positionClass": "toast-bottom-full-width"
+        		}
+        		toastr.info('Haga click en el lugar de la incidencia para poder notificarla.');
+        	}
+        }
+        
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
         /// EVENTS
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        this.onModelUpdated = function onModelUpdated(event, geoJSON) {
-            console.log("mejorua.Map.onModelUpdated(geoJSON:%O)", geoJSON);
+        this.onModelUpdated = function onModelUpdated(event, issues) {
+            console.log("mejorua.Map.onModelUpdated(issues:%O)", issues);
 
-            this.addGeoJSON(geoJSON);
+            this.model.issues = issues;
+            
+            this.addGeoJSON(issues.getGeoJSON());
         }
 
         this.onLoadStateNewIssue = function onNewIssueMarkerClick() {
@@ -535,6 +574,6 @@ var mejorua = mejorua || {};
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        this.init();
-    };
+        this.init(issueDetailModel, notifyIssueModel);
+    }
 })();

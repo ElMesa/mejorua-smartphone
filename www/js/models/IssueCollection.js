@@ -43,7 +43,7 @@ mejorua.models = mejorua.models || {};
 
         onSync: function onSync(event) {
             console.log('mejorua.models.IssueCollection.onSync()');
-            $(this.map).trigger('modelUpdated', [this.getGeoJSON()]);
+            $(this.map).trigger('modelUpdated', [this]);
         },
 
         getGeoJSON: function getGeoJSON() {

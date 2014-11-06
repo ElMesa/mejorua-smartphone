@@ -82,7 +82,8 @@ mejorua.controllers = mejorua.controllers || {};
             */
 
             this.defaultPage = this.pagesOrder[0];
-            this.actualPage = this.defaultPage;
+            //this.actualPage = this.defaultPage;
+            this.actualPage = {id: -1};
 
             var i = 0;
             var count = this.pagesOrder.length;
@@ -90,7 +91,7 @@ mejorua.controllers = mejorua.controllers || {};
                 $('#' + this.pagesOrder[i].id).hide();
             }
 
-            $('#' + this.actualPage.id).fadeIn();
+            //$('#' + this.actualPage.id).fadeIn();
         }
 
         this.add = function add(page) {
@@ -98,20 +99,7 @@ mejorua.controllers = mejorua.controllers || {};
             this.pagesOrder.push(page);
         }
 
-        this.transition = function transition(slideFrom, slideTo, slideOut, slideIn) {
-
-            var delay = 500;
-            var transitionEnd = delay * 2;
-
-            $('#' + slideFrom).hide('slide', {
-                direction: slideOut
-            }, delay);
-            $('#' + slideTo).delay(delay).show('slide', {
-                direction: slideIn
-            }, delay);
-
-            return transitionEnd;
-        }
+        
 
         this.show = function show(targetPageId, targetState, data, shouldPushBrowserHistory) {
 
@@ -138,25 +126,10 @@ mejorua.controllers = mejorua.controllers || {};
                         //Check if transition to page is needed
                         if (isDiferentPage) {
 
-                            //TODO - REFACTOR - To function
-                            var slideFrom = this.actualPage.id;
-                            var slideTo = targetPage.id;
-                            var slideOut = '';
-                            var slideIn = '';
+                           this.smartTransition(this.actualPage.id, targetPage.id);
 
-                            var actualPagePosition = this.pagePosition(this.actualPage.id);
-                            var targetPagePosition = this.pagePosition(targetPage.id);
-
-                            if (targetPagePosition < actualPagePosition) {
-                                slideOut = 'right';
-                                slideIn = 'left';
-                            } else {
-                                slideOut = 'left';
-                                slideIn = 'right';
-                            }
-
-                            this.transition(slideFrom, slideTo, slideOut, slideIn);
-                            //END REFACTOR
+                           this.markActiveNavbar(targetPage.id);
+                           
                         }
 
                         if (shouldPushBrowserHistory) {
@@ -176,6 +149,68 @@ mejorua.controllers = mejorua.controllers || {};
             } else {
                 console.log("ERROR - mejorua.controllers.Page.show() - Undefined page: %O", targetPage);
             }
+        }
+        
+        this.smartTransition = function transition(pageIdFrom, pageIdTo) {
+
+        	var slideFrom = pageIdFrom;
+            var slideTo = pageIdTo;
+            var slideOut = '';
+            var slideIn = '';
+
+            var actualPagePosition = this.pagePosition(pageIdFrom);
+            var targetPagePosition = this.pagePosition(pageIdTo);
+
+            //Slide transition on known pages (id > 0)
+            if(actualPagePosition >= 0 && targetPagePosition >=0) {
+	            if (targetPagePosition < actualPagePosition) {
+	                slideOut = 'right';
+	                slideIn = 'left';
+	            } else {
+	                slideOut = 'left';
+	                slideIn = 'right';
+	            }
+	
+	            this.transition(slideFrom, slideTo, slideOut, slideIn);
+            } else {
+            	this.transition(slideFrom, slideTo, slideOut, slideIn, true);
+            }
+        }
+        
+        this.transition = function transition(slideFrom, slideTo, slideOut, slideIn, useFadeTransition) {
+
+            var delay = 500;
+            var transitionEnd = delay * 2;
+            var firstTransitionType = 'slide';
+            var secondTransitionType = 'slide';
+            
+            if(!useFadeTransition) {	
+	            $('#' + slideFrom).hide(firstTransitionType, {
+	                direction: slideOut
+	            }, delay);
+	            $('#' + slideTo).delay(delay).show(secondTransitionType, {
+	                direction: slideIn
+	            }, delay);
+            } else {
+            	$('#' + slideFrom).fadeOut(delay);
+	            $('#' + slideTo).delay(delay).fadeIn(delay);
+            }
+
+            return transitionEnd;
+        }
+        
+        this.markActiveNavbar = function markActiveNavbar(activePageId) {
+        	
+        	for(index in this.pages) {
+        		
+        		var pageId = this.pages[index].id;
+        			
+        		if(pageId == activePageId) {
+        			$('#navbar-' + pageId).toggleClass('active', true);
+        		} else {
+        			$('#navbar-' + pageId).toggleClass('active',false);
+        		}
+        	}
         }
 
         /*
@@ -206,12 +241,15 @@ mejorua.controllers = mejorua.controllers || {};
         this.pagePosition = function pagePosition(pageId) {
             var index = 0;
             var found = false;
-            while (!found) {
-                if (this.pagesOrder[index].id == pageId) {
-                    found = true;
-                } else {
-                    index++;
-                }
+            
+            if(pageId != -1) {
+	            while (!found) {
+	                if (this.pagesOrder[index].id == pageId) {
+	                    found = true;
+	                } else {
+	                    index++;
+	                }
+	            }
             }
 
             if (found == false) index = -1;

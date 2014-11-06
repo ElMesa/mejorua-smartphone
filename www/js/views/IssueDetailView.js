@@ -2,18 +2,21 @@ var mejorua = mejorua || {};
 mejorua.views = mejorua.views || {};
 
 (function() {
-    mejorua.views.IssueDetail = function IssueDetail() {
+    mejorua.views.IssueDetail = function IssueDetail(id, model) {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
         /// ATRIBUTTES
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.model = undefined;
+        var self = this;
+        this.id = undefined;
+    	
+    	this.model = undefined;
 
-        this.templateId = 'issueDetailTemplate';
+        this.templateId = undefined;
         this.template = undefined; //Handlebars template
-        this.drawId = 'issueDetail';
+        this.placeholderId = undefined;
 
         this.stateIcon = {
             PENDING: 'img/map/icon_pending.png',
@@ -48,40 +51,67 @@ mejorua.views = mejorua.views || {};
         /// METHODS
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.init = function init() {
+        this.init = function init(id, model) {
             console.log("views.IssueDetail.init()");
 
+            this.id = id;
+            this.templateId = 'issueDetailTemplate';
+            this.placeholderId = id + '_placeholder';
+            
             var templateSource = $('#' + this.templateId).html();
             this.template = Handlebars.compile(templateSource);
+            
+            if (model) this.setModel(model);
+        }
+        
+        this.setModel = function setModel(model) {
+        	if(this.model) this.model.off('change', this.update, this);
+        	this.model = model;
+        	this.model.on('change', this.update, this);
+        	this.update();
         }
 
-        this.update = function update(model) {
-            console.log("views.IssueDetail.update(model:%O)", model);
+        this.update = function update() {
+            console.log("views.IssueDetail.update(model:%O)", this.model);
 
-            if (model) this.model = model;
+            var viewData = {};
+            viewData.viewId = this.id;
+            viewData.viewStateIcon = this.stateIcon[this.model.attributes.state];
+            viewData.viewStateCSS = this.stateCSS[this.model.attributes.state];
+            viewData.viewStateText = this.stateText[this.model.attributes.state];
 
-            this.model.viewStateIcon = this.stateIcon[this.model.state];
-            this.model.viewStateCSS = this.stateCSS[this.model.state];
-            this.model.viewStateText = this.stateText[this.model.state];
+            viewData.events = this.formatEvents(this.model.attributes.events);
+            
+            var templateData = $.extend({}, this.model.attributes, viewData);
 
-            this.formatEvents(this.model.events);
-
-            var html = this.template(this.model);
-            $('#' + this.drawId).html(html);
+            var html = this.template(templateData);
+            $('#' + this.placeholderId).html(html);
         }
 
         this.formatEvents = function formatEvents(events) {
 
-            var event;
-
-            var count = events.length;
-            var i = 0;
-            for (i = 0; i < count; i++) {
-                event = events[i];
-                event.viewDate = (new Date(event.date)).toLocaleString();
-                event.viewType = this.evenTypeText[event.type];
-                event.viewBackgroundCSS = this.evenTypeBackgroundCSS[event.type];
-            }
+        	var eventsViewData = undefined;
+        	
+        	if(events) {
+	            var event;
+	            var eventViewData;
+	            
+	            eventsViewData = [];
+	
+	            var count = events.length;
+	            var i = 0;
+	            for (i = 0; i < count; i++) {
+	                event = events[i];
+	                
+	                eventViewData = {};
+	                eventViewData.viewDate = (new Date(event.date)).toLocaleString();
+	                eventViewData.viewType = this.evenTypeText[event.type];
+	                eventViewData.viewBackgroundCSS = this.evenTypeBackgroundCSS[event.type];
+	                eventsViewData.push(eventViewData);
+	            }
+        	}
+        	
+        	return eventsViewData;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +119,6 @@ mejorua.views = mejorua.views || {};
         /// SELF INITILIZATION
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.init();
+        this.init(id, model);
     }
 })();

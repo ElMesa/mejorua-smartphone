@@ -28,14 +28,21 @@ mejorua.controllers = mejorua.controllers || {};
             console.log("controllers.App.init()");
   
             this.api = new mejorua.Api();
-            this.map = new mejorua.Map();
             this.page = new mejorua.controllers.Page();
     
-            this.views.issueDetail = new mejorua.views.IssueDetail();
-            this.controllers.issueDetail = new mejorua.controllers.IssueDetail();
+            this.models.issueDetail = new mejorua.models.Issue();
+            this.views.issueDetail = new mejorua.views.IssueDetail('issueDetail', this.models.issueDetail);
+            this.controllers.issueDetail = new mejorua.controllers.IssueDetail(this.models.issueDetail, this.views.issueDetail);
+            
+            this.models.notifyIssue = new mejorua.models.Issue();
+    		this.views.notifyIssue = new mejorua.views.IssueDetail('notifyIssue', this.models.notifyIssue);   
+            this.controllers.notifyIssue = new mejorua.controllers.NotifyIssue(this.models.notifyIssue, this.views.notifyIssue);
 
+            this.map = new mejorua.Map(this.models.issueDetail, this.models.notifyIssue);
+            
             this.setupPages();
             this.page.init();
+            this.page.show(this.page.defaultPage.id);
 
             // Backbone Collection - Issues
             this.models.issues = new mejorua.models.IssueCollection(
@@ -78,6 +85,9 @@ mejorua.controllers = mejorua.controllers || {};
         }
 
         this.setupPages = function setupPages() {
+        	//TODO - REFACTOR - Put this page info in his controller, accesible by "controllername".page.
+        	//Last line of each page (Example: pageMap.actualState = pageMap.state['default'];) should be executed in the controller
+        	//{App} should "for page in pages" this.page.add(pages[page]);  at the end
             var pageMap = {
                 id: "pageMap",
                 state: {
@@ -85,13 +95,14 @@ mejorua.controllers = mejorua.controllers || {};
                         id: 'default',
                         title: "Mejor UA - Mapa",
                         url: "mapa"
-                    },
-                    newIssue: {
-                        id: 'newIssue',
-                        title: "Mejor UA - Mapa - Notificar incidencia",
-                        url: "mapa/notificarIncidencia",
-                        onLoad: this.map.onLoadStateNewIssue
                     }
+//                    },
+//                    newIssue: {
+//                        id: 'newIssue',
+//                        title: "Mejor UA - Mapa - Notificar incidencia",
+//                        url: "mapa/notificarIncidencia",
+//                        onLoad: this.map.onLoadStateNewIssue
+//                    }
                 }
             }
             pageMap.actualState = pageMap.state['default'];
@@ -120,10 +131,24 @@ mejorua.controllers = mejorua.controllers || {};
                 }
             }
             pageRESTClient.actualState = pageRESTClient.state['default'];
+            
+            var pageNotifyIssue = {
+                    id: "pageNotifyIssue",
+                    state: {
+                        default: {
+                            id: 'default',
+                            title: "Mejor UA - Notificar incidencia",
+                            //url: "notificarIncidencia/paso2" //BUG al utilizar rutas con profundidad > 1. La URL se queda con el primer nivel de forma visible y permanente en la barra de direcciones
+                            url: "notificarIncidenciaPaso2"
+                        }
+                    }
+                }
+            pageNotifyIssue.actualState = pageNotifyIssue.state['default'];
 
             this.page.add(pageMap);
             this.page.add(pageIssueDetail);
             this.page.add(pageRESTClient);
+            this.page.add(pageNotifyIssue);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

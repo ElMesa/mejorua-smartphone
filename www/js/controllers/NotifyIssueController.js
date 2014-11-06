@@ -2,7 +2,7 @@ var mejorua = mejorua || {};
 mejorua.controllers = mejorua.controllers || {};
 
 (function() {
-    mejorua.controllers.IssueDetail = function IssueDetail(model, view) {
+    mejorua.controllers.NotifyIssue = function NotifyIssue(model, view) {
 
     	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
@@ -11,8 +11,8 @@ mejorua.controllers = mejorua.controllers || {};
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         var self = this;
-        this.issues = undefined;
-        this.model = undefined;
+        var id = undefined;
+        this.issue = undefined;
         this.view = undefined;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,24 +22,22 @@ mejorua.controllers = mejorua.controllers || {};
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     	this.init = function init(model, view) {
-    		console.log("mejorua.controllers.IssueDetail.init()");
+    		console.log("mejorua.controllers.NotifyIssue.init()");
 
-    		this.issues = model;
-        	this.view = view;
+    		this.view = view;
+    		this.model = model;
     	}
 
     	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
-        /// EVENTS
+        /// SETTER'S
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.onLoadStateDefault = function onLoadStateDefault(data) {
-        	if(data && data.issueId) {
-	            var issueId = data.issueId;
-	            self.model.set(self.issues.get(issueId).attributes);
-	            //self.view.update(model);
-            }
-        }
+//        this.setIssue = function setIssue(issue) {
+//        	
+//        	this.issue = issue;
+//        	this.view.update(issue);
+//        }
 
     	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
