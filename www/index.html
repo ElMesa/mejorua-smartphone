@@ -241,7 +241,52 @@
 			</div>
 			*/
 			-->
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUASede" class="col-sm-2 control-label">
+					Sede
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUASede" class="form-control-static">{{SIGUASede.attributes.0.nombre}}</p>
+				</div>
+			</div>
 		
+			<div class="form-group">
+				<label for="issueDetail_SIGUAEdificio" class="col-sm-2 control-label">
+					Edificio
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAEdificio" class="form-control-static">{{SIGUAEdificio.attributes.0.nombre}}</p>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUAPlanta" class="col-sm-2 control-label">
+					Planta
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAPlanta" class="form-control-static">{{viewFloorName}}</p>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUAEstancia" class="col-sm-2 control-label">
+					Estancia
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAEstancia" class="form-control-static">{{SIGUAEstancia.attributes.denominacion}}</p>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUAActividad" class="col-sm-2 control-label">
+					Actividad
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAActividad" class="form-control-static">{{SIGUAEstancia.attributes.nombre_actividad}}</p>
+				</div>
+			</div>
+
 			<div class="form-group">
 				<label class="col-sm-2 control-label">
 					Lugar
@@ -465,6 +510,7 @@
 
 ---------------------------------------------------------------------------------------------------------------------------->
 
+	<script src="js/models/SIGUA.js"></script>
 	<script src="js/models/Issue.js"></script>
 	<script src="js/models/IssueCollection.js"></script>
 	<script src="js/controllers/IssueDetailController.js"></script>	

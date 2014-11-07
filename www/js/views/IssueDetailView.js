@@ -45,7 +45,17 @@ mejorua.views = mejorua.views || {};
             STATE_CHANGE_INPROGRESS: 'issueStateInProgressBackground',
             STATE_CHANGE_DONE: 'issueStateDoneBackground'
         }
-
+        this.floorNameById = {
+    		PS: 'Sotano',
+    		PB: 'Planta baja',
+    		P1: 'Planta primera',
+    		P2: 'Planta segunda',
+    		P3: 'Planta tercera',
+    		P4: 'Planta cuarta'
+        }
+        
+		
+		
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
         /// METHODS
@@ -68,24 +78,27 @@ mejorua.views = mejorua.views || {};
         	if(this.model) this.model.off('change', this.update, this);
         	this.model = model;
         	this.model.on('change', this.update, this);
+        	$(this.model).on('change', this.update);
         	this.update();
         }
 
         this.update = function update() {
-            console.log("views.IssueDetail.update(model:%O)", this.model);
+            console.log("views.IssueDetail.update(model:%O)", self.model);
 
             var viewData = {};
-            viewData.viewId = this.id;
-            viewData.viewStateIcon = this.stateIcon[this.model.attributes.state];
-            viewData.viewStateCSS = this.stateCSS[this.model.attributes.state];
-            viewData.viewStateText = this.stateText[this.model.attributes.state];
+            viewData.viewId = self.id;
+            viewData.viewStateIcon = self.stateIcon[self.model.attributes.state];
+            viewData.viewStateCSS = self.stateCSS[self.model.attributes.state];
+            viewData.viewStateText = self.stateText[self.model.attributes.state];
 
-            viewData.events = this.formatEvents(this.model.attributes.events);
+            viewData.events = self.formatEvents(self.model.attributes.events);
             
-            var templateData = $.extend({}, this.model.attributes, viewData);
+            viewData.viewFloorName = self.floorNameById[self.model.get('SIGUAPlanta')];
+            
+            var templateData = $.extend({}, self.model.attributes, viewData);
 
-            var html = this.template(templateData);
-            $('#' + this.placeholderId).html(html);
+            var html = self.template(templateData);
+            $('#' + self.placeholderId).html(html);
         }
 
         this.formatEvents = function formatEvents(events) {

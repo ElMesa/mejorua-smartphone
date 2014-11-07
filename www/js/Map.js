@@ -126,6 +126,15 @@ var mejorua = mejorua || {};
             INPROGRESS: "En proceso",
             DONE: "Hecho"
         }
+        
+        this.mapFloor2SIGUAFloor = {
+    		basement: 'PS',
+            ground: 'PB',
+            first: 'P1',
+            second: 'P2',
+            third: 'P3',
+            fourth: 'P4' 
+        }
 
         //Icon associated with a state. INITIALIZED AT initIcon()
         this.stateIcon = undefined;
@@ -439,7 +448,8 @@ var mejorua = mejorua || {};
         		var position = self.marker.notifyIssue.getLatLng();
         		self.model.notifyIssue.set({
         			latitude: position.lat,
-        			longitude: position.lng
+        			longitude: position.lng,
+        			SIGUAPlanta: self.mapFloor2SIGUAFloor[self.floor]
         		});
         		mejorua.app.page.show('pageNotifyIssue', undefined, undefined, true);
         		self.setState('showIssues');
