@@ -484,9 +484,9 @@ var mejorua = mejorua || {};
         this.onModelUpdated = function onModelUpdated(issues, options) {
             console.log("mejorua.Map.onModelUpdated(issues:%O)", issues);
 
-            this.model.issues = issues;
+            //this.model.issues = issues;
             
-            this.addGeoJSON(issues.getGeoJSON());
+            this.addGeoJSON(this.model.issues.getGeoJSON());
         }
 
         this.onLoadStateNewIssue = function onNewIssueMarkerClick() {

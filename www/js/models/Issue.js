@@ -44,6 +44,11 @@ mejorua.models = mejorua.models || {};
 					console.log('ERROR - mejorua.models.Issue on change:SIGUAEstancia - No estancia id detected, cannot fetch "sede" (headquarters) or "edificio" (building)');
 				}
 	  		}, this);
+
+	  		this.on('change:idSIGUA', function(model, options) {
+	  			console.log('mejorua.models.Issue on change:idSIGUA');
+	  			self.set('SIGUAPlanta', self.get('idSIGUA').substring(4, 6));
+	  		});
 	  		
 	  		this.on('change', function(model, options) {
 	  			if(model.changed.latitude || model.changed.longitude) {
@@ -91,8 +96,8 @@ mejorua.models = mejorua.models || {};
 	        ]);
 
 	        options.data = JSON.stringify(attrs);;
-	        //options.type = "POST";
-	        options.type = "PUT";
+	        options.type = "POST";
+	        //options.type = "PUT";
 	        options.contentType = "application/json";
 	        //options.contentType = "application/x-www-form-urlencoded";
 

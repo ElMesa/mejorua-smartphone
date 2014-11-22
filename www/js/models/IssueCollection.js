@@ -18,7 +18,8 @@ mejorua.models = mejorua.models || {};
             //Pass intitilize(options) to this object
             //this.map = options.map;
             this.apiURL = options.apiURL;
-            this.url = this.apiURL + "/" + this.name + "?filter[include]=events";
+            //this.url = this.apiURL + "/" + this.name + "?filter[include]=events";
+            this.url = this.apiURL + "/" + this.name;
 
             
             this.on('sync', this.onSync);
