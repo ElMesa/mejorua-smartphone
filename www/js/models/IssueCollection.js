@@ -10,21 +10,17 @@ mejorua.models = mejorua.models || {};
         initialize: function initialize(models, options) {
             console.log('mejorua.models.IssueCollection.initialize()');
 
+            this.self = this;
+            
             _.bindAll(this, "onSync");
             _.bindAll(this, "getGeoJSON");
 
             //Pass intitilize(options) to this object
+            //this.map = options.map;
             this.apiURL = options.apiURL;
-            this.map = options.map;
+            this.url = this.apiURL + "/" + this.name + "?filter[include]=events";
 
-            this.url = this.apiURL + "/" + this.name;
-
-            /*
-            this.on('sync', function() {
-                console.log('mejorua.models.IssueCollection - on(\'sync\')');
-                $(this.map).trigger('modelUpdated');
-            });
-            */
+            
             this.on('sync', this.onSync);
         },
 
@@ -43,7 +39,7 @@ mejorua.models = mejorua.models || {};
 
         onSync: function onSync(event) {
             console.log('mejorua.models.IssueCollection.onSync()');
-            $(this.map).trigger('modelUpdated', [this]);
+            //$(this.map).trigger('modelUpdated', [this]);
         },
 
         getGeoJSON: function getGeoJSON() {

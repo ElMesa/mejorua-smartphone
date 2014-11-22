@@ -29,20 +29,6 @@ mejorua.controllers = mejorua.controllers || {};
   
             this.api = new mejorua.Api();
             this.page = new mejorua.controllers.Page();
-    
-            this.models.issueDetail = new mejorua.models.Issue();
-            this.views.issueDetail = new mejorua.views.IssueDetail('issueDetail', this.models.issueDetail);
-            this.controllers.issueDetail = new mejorua.controllers.IssueDetail(this.models.issueDetail, this.views.issueDetail);
-            
-            this.models.notifyIssue = new mejorua.models.Issue();
-    		this.views.notifyIssue = new mejorua.views.IssueDetail('notifyIssue', this.models.notifyIssue);   
-            this.controllers.notifyIssue = new mejorua.controllers.NotifyIssue(this.models.notifyIssue, this.views.notifyIssue);
-
-            this.map = new mejorua.Map(this.models.issueDetail, this.models.notifyIssue);
-            
-            this.setupPages();
-            this.page.init();
-            this.page.show(this.page.defaultPage.id);
 
             // Backbone Collection - Issues
             this.models.issues = new mejorua.models.IssueCollection(
@@ -51,6 +37,22 @@ mejorua.controllers = mejorua.controllers || {};
                     map: this.map
                 }
             );
+    
+            this.models.issueDetail = new mejorua.models.Issue();
+            this.views.issueDetail = new mejorua.views.IssueDetail('issueDetail', this.models.issueDetail, "read");
+            this.controllers.issueDetail = new mejorua.controllers.IssueDetail(this.models.issueDetail, this.views.issueDetail);
+            
+            this.models.notifyIssue = new mejorua.models.Issue();
+            this.views.notifyIssue = new mejorua.views.IssueDetail('notifyIssue', this.models.notifyIssue, "create");   
+            this.controllers.notifyIssue = new mejorua.controllers.NotifyIssue(this.models.issues, this.models.notifyIssue, this.views.notifyIssue);
+
+            this.map = new mejorua.Map(this.models.issueDetail, this.models.notifyIssue);
+            this.map.setModelIssues(this.models.issues);
+            
+            this.setupPages();
+            this.page.init();
+            this.page.show(this.page.defaultPage.id);
+
             var issuesFetchedPromise = this.models.issues.myFetch();
             issuesFetchedPromise.done(function() { 
                 self.controllers.issueDetail.init(self.models.issues, self.views.issueDetail);
@@ -79,6 +81,7 @@ mejorua.controllers = mejorua.controllers || {};
 
             $("#btn_setHostLocalhost").click(this.onBtn_setHostLocalhostClick);
             $("#btn_setHostAndroidEmulatorHost").click(this.onBtn_setHostAndroidEmulatorHostClick);
+            $("#btn_RESTClient_setCustomHost").click(this.onBtn_RESTClient_setCustomHost);
             //Page API REST Client - END
             ///////////////////////////////////////////////////////////////////////////
 
@@ -147,8 +150,8 @@ mejorua.controllers = mejorua.controllers || {};
 
             this.page.add(pageMap);
             this.page.add(pageIssueDetail);
-            this.page.add(pageRESTClient);
             this.page.add(pageNotifyIssue);
+            this.page.add(pageRESTClient);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,7 +243,27 @@ mejorua.controllers = mejorua.controllers || {};
         this.onBtn_setHostAndroidEmulatorHostClick = function onBtn_setHostAndroidEmulatorHostClick() {
             console.log("mejorua.onBtn_setHostAndroidEmulatorHostClick()");
 
-            this.api.setHost("10.0.2.2");
+            this.api.initPhonegap();
+            this.models.issues.initialize(
+                    [], {
+                        apiURL: this.api.url,
+                        map: this.map
+                    }
+                );
+            this.models.issues.myFetch();
+        }
+        
+        this.onBtn_RESTClient_setCustomHost = function onBtn_setHostAndroidEmulatorHostClick() {
+            console.log("mejorua.onBtn_RESTClient_setCustomHost()");
+
+            self.api.initCustomHost();
+            self.models.issues.initialize(
+                    [], {
+                        apiURL: self.api.url,
+                        map: self.map
+                    }
+                );
+            self.models.issues.myFetch();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,6 +280,15 @@ mejorua.controllers = mejorua.controllers || {};
         ///	DEBUG
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.DEBUG = {};
+
+        this.DEBUG.IssueCollection = {};
+        this.DEBUG.IssueCollection.bulkUpdateState = function bulkUpdateState(newState) {
+            $(self.models.issues.models).each(function (issue) {
+                this.set('state', newState).save();
+            });
+        }
 
         this.DEBUGIssueCollection = function DEBUGIssueCollection() {
             console.log("controllers.App.DEBUGIssueCollection()");

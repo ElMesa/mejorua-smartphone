@@ -16,6 +16,54 @@ var mejorua = mejorua || {};
 
 			//Derived parameters
 			this.url = this.buildURL();
+			this.urlProxy = this.url + '/proxy/';
+			this.resourceURL = this.buildResourceURL();
+			
+			this.updateView();
+		}
+		
+		this.initPhonegap = function initPhonegap() {
+			
+			this.protocol = 'http:';
+			this.hostname = "10.0.2.2";
+			this.port = '8080';
+			this.pathName = '/mejorua-api/';
+			this.pathNameAPI = "api";
+
+			this.collection = "issues";
+			this.resourceId = "1";
+
+			//Derived parameters
+			this.url = this.buildURL();
+			this.resourceURL = this.buildResourceURL();
+			
+			this.updateView();
+		}
+		
+		this.initCustomHost = function initCustomHost() {
+			
+			//URI parser from: https://gist.github.com/jlong/2428561
+			//parser.href = "http://example.com:3000/pathname/?search=test#hash";
+			
+			var parser = document.createElement('a');
+			parser.href = $('#RESTClient_customAPIURL').val();
+			//parser.search; // => "?search=test"
+			//parser.hash; // => "#hash"
+			//parser.host; // => "example.com:3000" 
+
+			this.protocol = parser.protocol;
+			this.hostname = parser.hostname;
+			this.port = parser.port;
+			this.pathName = parser.pathname;
+			this.pathNameAPI = "";
+
+			this.urlProxy = $('#RESTClient_customProxyURL').val();
+
+			this.collection = "issues";
+			this.resourceId = "1";
+
+			//Derived parameters
+			this.url = this.buildURL();
 			this.resourceURL = this.buildResourceURL();
 			
 			this.updateView();
@@ -23,13 +71,15 @@ var mejorua = mejorua || {};
 
 		this.buildURL = function buildURL() {
 			console.log("mejorua.api.buildURL()");
-			this.url = this.protocol + "//" + this.hostname + ":" + this.port + this.pathName + this.pathNameAPI;
+			var url = this.protocol + "//" + this.hostname + ":" + this.port + this.pathName + this.pathNameAPI;
+			this.url = url;
+			return url;
 		};
 
-		this.setHost = function setHost(host) {
-			console.log("mejorua.api.setHost(host: %s)", host);
+		this.setHost = function setHost(hostname) {
+			console.log("mejorua.api.setHost(host: %s)", hostname);
 
-			this.host = host;
+			this.hostname = hostname;
 			this.buildURL();
 			this.buildResourceURL();
 			this.updateView();

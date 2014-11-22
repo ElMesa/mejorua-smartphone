@@ -71,11 +71,11 @@
 					<li id="navbar-pageIssueDetail">
 						<a href="javascript:mejorua.app.page.show('pageIssueDetail')">Issue Detail</a>
 					</li>
-					<li id="navbar-pageRESTClient">
-						<a href="javascript:mejorua.app.page.show('pageRESTClient')">REST Client</a>
-					</li>
 					<li id="navbar-pageNotifyIssue">
 						<a href="javascript:mejorua.app.page.show('pageNotifyIssue')">Notificando incidencia</a>
+					</li>
+					<li id="navbar-pageRESTClient">
+						<a href="javascript:mejorua.app.page.show('pageRESTClient')">DEBUG</a>
 					</li>
 				</ul>                   
 		    </div>
@@ -179,24 +179,24 @@
 			</div>
 
 			<div class="form-group">
-				<label for="issueDetailAction" class="col-sm-2 control-label">
+				<label for="{{viewId}}_issueDetailAction" class="col-sm-2 control-label">
 					Accion
 				</label>
 				<div class="col-sm-10">
-					<input id="issueDetailAction" type="text" disabled class="form-control disabled" placeholder="Acción a realizar en la incidencia" value="{{action}}">
+					<input id="{{viewId}}_issueDetailAction" type="text" {{inputsDisabledCSS}} class="form-control {{inputsDisabledCSS}}" placeholder="Acción a realizar en la incidencia" value="{{action}}">
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label for="issueDetailTerm" class="col-sm-2 control-label">
+				<label for="{{viewId}}_issueDetailTerm" class="col-sm-2 control-label">
 					Objetivo
 				</label>
 				<div class="col-sm-10">
-					<input id="issueDetailTerm" type="text" disabled class="form-control disabled" placeholder="Objetivo de la acción a realizar en la incidencia" value="{{term}}">
+					<input id="{{viewId}}_issueDetailTerm" type="text" {{inputsDisabledCSS}} class="form-control {{inputsDisabledCSS}}" placeholder="Objetivo de la acción a realizar en la incidencia" value="{{term}}">
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="form-group" {{{hideOnCreate}}}>
 				<label for="issueDetailState" class="col-sm-2 control-label">
 					Estado
 				</label>
@@ -305,9 +305,9 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="form-group" {{{hideOnCreate}}}>
 				<label class="col-sm-2 control-label">
-					Actividad
+					Historial
 				</label>
 				<div class="col-sm-10">
 
@@ -337,12 +337,17 @@
 						</tbody>
 					</table>
 					{{else}}
-					<p class="form-control-static">Sin actividad conocida</p>
+					<p class="form-control-static">Sin datos en el historial</p>
 					{{/if}}
 
 				</div>
 			</div>
 
+			<div class="row">
+				<div class="col-sm-offset-2 col-sm-10">
+					<a class="submit btn btn-success btn-block" {{{hideOnRead}}}>Notificar</a>
+				</div>
+			</div>
 		</form>
 
 	</script>
@@ -377,6 +382,31 @@
 	<div id="pageRESTClient" class="container" style="display:none">
 		<div class="row">
 			<div class="col-md-offset-1 col-md-10">
+				<h1>DEBUG Controls</h1>
+				
+				<h2>API</h2>
+				
+				<div class="from-group">
+					<label for="RESTClient_customAPIURL">Custom API URL</label>
+					<input id="RESTClient_customAPIURL" type="text" class="form-control" value="http://localhost:3000/api" />
+					<label for="RESTClient_customProxyURL">Custom Proxy URL</label>
+					<input id="RESTClient_customProxyURL" type="text" class="form-control" value="http://localhost:4000/proxy" />
+
+					<a id="btn_RESTClient_setCustomHost" class="btn btn-success">Set custom API</a>
+					<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Phonegap preset</a>
+				</div>
+			
+				<h2>Issues bulk update</h2>
+				
+				<a href="javascript:mejorua.app.DEBUG.IssueCollection.bulkUpdateState('PENDING');"  class="btn btn-danger">State: Pending</a>
+				<a href="javascript:mejorua.app.DEBUG.IssueCollection.bulkUpdateState('INPROGRESS');"  class="btn btn-warning">State: In progress</a>
+				<a href="javascript:mejorua.app.DEBUG.IssueCollection.bulkUpdateState('DONE');"  class="btn btn-success">State: Done</a>
+				
+				<br>
+				<br>
+				<br>
+				<h1>Old stuff</h1>
+					
 				<h2>Cliente para MejorUA.api v1</h2>
 
 

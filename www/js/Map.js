@@ -13,7 +13,7 @@ var mejorua = mejorua || {};
         
         this.model = {};
         this.model.issues = undefined;
-        this.model.issueDetail = undefined;
+        this.model.issonueDetail = undefined;
         this.model.notifyIssue = undefined;
         
         this.floorSelector = new mejorua.views.MapFloorSelector();
@@ -121,11 +121,18 @@ var mejorua = mejorua || {};
             INPROGRESS: 'issueStateInProgress',
             DONE: 'issueStateDone'
         }
+        
         this.stateText = {
             PENDING: "Pendiente",
             INPROGRESS: "En proceso",
             DONE: "Hecho"
         }
+        
+        this.stateShowIssueDetailsButtonCSS = {
+                PENDING: 'btn-danger',
+                INPROGRESS: 'btn-warning',
+                DONE: 'btn-success'
+            }
         
         this.mapFloor2SIGUAFloor = {
     		basement: 'PS',
@@ -166,7 +173,7 @@ var mejorua = mejorua || {};
             
             this.setState(this.state.default);
 
-            $(this).on('modelUpdated', this.onModelUpdated);
+            //$(this).on('modelUpdated', this.onModelUpdated);
 
             //this.DEBUGpopulateLocations();
             //this.DEBUGpopulateMarkers();
@@ -316,7 +323,7 @@ var mejorua = mejorua || {};
                     feature.properties.action + '<br/>' +
                     feature.properties.term + '<br/>' +
                     //'<a href="javascript:mejorua.app.page.show(\'pageIssueDetail\', undefined, {issueId: ' + feature.properties.id + '}, true)" class="btn btn-xs btn-primary">Ver detalles</a>' +
-                    '<a href="javascript:mejorua.app.map.state.showIssues.showIssueDetail(' + feature.properties.id + ')" class="btn btn-xs btn-primary">Ver detalles</a>' +
+                    '<a href="javascript:mejorua.app.map.state.showIssues.showIssueDetail(' + feature.properties.id + ')" class="btn btn-xs ' + this.stateShowIssueDetailsButtonCSS[feature.properties.state] + '">Ver detalles</a>' +
                     
                     '</p>';
                 layer.bindPopup(popupText, {
@@ -353,6 +360,11 @@ var mejorua = mejorua || {};
         /// METHODS - SETTER'S
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        this.setModelIssues = function setModelIssues(issues) {
+        	this.model.issues = issues;
+            issues.on('sync',this.onModelUpdated);
+        }
         
         this.setState = function setState(newState) {
         	console.log('mejorua.Map.setState(%O)', newState);
@@ -469,7 +481,7 @@ var mejorua = mejorua || {};
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        this.onModelUpdated = function onModelUpdated(event, issues) {
+        this.onModelUpdated = function onModelUpdated(issues, options) {
             console.log("mejorua.Map.onModelUpdated(issues:%O)", issues);
 
             this.model.issues = issues;
@@ -493,7 +505,8 @@ var mejorua = mejorua || {};
                 }).bindPopup(position).update();
         }
         */
-
+        
+        
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
         /// DEBUG

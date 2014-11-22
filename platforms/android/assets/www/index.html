@@ -1,119 +1,554 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MejorUA.webapp v1</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>MejorUA.webapp v1</title>
 
-<!-- Bootstrap -->
-<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap -->
+	<link href="css/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+	<link href="css/libs/bootstrap/bootstrap-theme.min.css" rel="stylesheet">
 
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
+	<!-- Leaflet Maps -->
+	<link href="css/libs/leaflet-0.7.3.css" rel="stylesheet">
+
+	<!-- Toastr -->
+	<link href="css/libs/toastr-2.0.3.min.css" rel="stylesheet">
+
+	<!-- MejorUA CSS -->
+	<link href="css/master.css" rel="stylesheet">
+	<link href="css/header.css" rel="stylesheet">
+	<link href="css/map.css" rel="stylesheet">
+	<link href="css/issueDetail.css" rel="stylesheet">
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
+
 <body>
 
-	<div class="col-sm-offset-1 col-sm-10">
+	<!--NAVBAR-------------------------------------------------------------------------------------------------------------------------
 
-		<h1>MejorUA.webapp v1 1</h1>
+	NAVBAR
 
-		<h2>Cliente para MejorUA.api v1</h2>
+---------------------------------------------------------------------------------------------------------------------------->
 
-		<br>
-
-		<h3>API URL</h3>
-
-		<div class="from-group">
-			<label for="apiHost">Host</label>
-			<input id="apiHost" type="text" class="form-control" value="10.0.2.2" />
-
-			<a id="btn_setHostLocalhost" class="btn btn-success">Set localhost</a>
-			<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Set 10.0.2.2</a>
+	<!--	Fixed HACKED navbar allowing fixed button outside collapse.
+			Variation from:
+				http://stackoverflow.com/questions/18610249/twitter-bootstrap-3-navbar-navbar-right-outside-navbar-collapse
+				http://www.bootply.com/78856#
+			If problems found. GET BACK TO GETTING START SAMPLE NAVBAR with button inside collapse
+	-->
+	<div id="navMain" class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header pull-left">
+		      <a class="navbar-brand" href="#">MejorUA</a>
+		    </div>
+		    <div class="navbar-header pull-right">
+		      <ul class="nav pull-left">
+		        <li>
+		          <!-- <button id="btnNotifyIssue" type="button" class="btn btn-success navbar-btn" onclick="mejorua.app.page.show('pageMap','newIssue')">Notificar incidencia</button> -->
+		          <button id="btnNotifyIssue" type="button" class="btn btn-success navbar-btn" onclick="mejorua.app.map.setState('notifyIssue')">Notificar incidencia</button>
+		        </li>
+		      </ul>
+		      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav-collapse">
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		      </button>
+		    </div>
+		    <div id="main-nav-collapse" class="navbar-collapse collapse">
+		      	<ul class="nav navbar-nav">
+					<li id="navbar-pageMap">
+						<a href="javascript:mejorua.app.page.show('pageMap')">Mapa</a>
+					</li>
+					<li id="navbar-pageIssueDetail">
+						<a href="javascript:mejorua.app.page.show('pageIssueDetail')">Issue Detail</a>
+					</li>
+					<li id="navbar-pageNotifyIssue">
+						<a href="javascript:mejorua.app.page.show('pageNotifyIssue')">Notificando incidencia</a>
+					</li>
+					<li id="navbar-pageRESTClient">
+						<a href="javascript:mejorua.app.page.show('pageRESTClient')">DEBUG</a>
+					</li>
+				</ul>                   
+		    </div>
 		</div>
-
-		<div class="from-group">
-			<label for="apiPort">Port</label>
-			<input id="apiPort" type="text" class="form-control" value="8080" />
-		</div>
-
-		<div class="from-group">
-			<label for="apiPath">Path to API</label>
-			<input id="apiPath" type="text" id="apiPath" class="form-control" value="api" />
-		</div>
-
-		<h3>Collection</h3>
-
-		<div class="form-group">
-			<label for="collection">Collección REST</label>
-			<input id="collection" type="text" class="form-control" placeholder="" value="incidencia" disabled>
-		</div>
-
-		<h3>Recuperar Incidencia</h3>
-
-		<form id="fGet" role="form">
-
-			<div class="form-group">
-				<label for="fGet_resourceId">Id Recurso REST</label>
-				<input id="fGet_resourceId" type="text" class="form-control" placeholder="" value="1">
-			</div>
-
-			<a id="fGet_submit" class="btn btn-default">Recuperar incidencia</a>
-		</form>
-
-		<p>Respuesta del API
-		<p>
-			<textarea id="fGet_response"></textarea>
-		<h3>Crear/Modificar Incidencia</h3>
-
-		<form id="fPut" role="form">
-
-			<div class="form-group">
-				<label for="fPut_resourceId">Id</label>
-				<input id="fPut_resourceId" type="text" class="form-control" placeholder="" value="1">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_latitude">Latitud</label>
-				<input id="fPut_latitude" type="text" class="form-control" placeholder="Introduzca la latitud de la incidencia" value="2">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_longitude">Longitud</label>
-				<input id="fPut_longitude" type="text" class="form-control" placeholder="Introduzca la longitud de la incidencia" value="2">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_term">Término</label>
-				<input id="fPut_term" type="text" class="form-control" placeholder="Termino al que se refiere la incidencia" value="2">
-			</div>
-
-			<div class="form-group">
-				<label for="fPut_action">Acción</label>
-				<input id="fPut_action" type="text" class="form-control" placeholder="Acción a realizar sobre el término" value="2">
-			</div>
-
-			<a id="fPut_submit" class="btn btn-default">Crear/Modificar incidencia</a>
-		</form>
-
-		<p>Respuesta del API
-		<p>
-			<textarea id="fPut_response"></textarea>
 	</div>
 
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="js/lib/jquery-1.11.0.min.js"></script>
+	<!---------------------------------------------------------------------------------------------------------------------------
 
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="js/lib/bootstrap-3.1.1.min.js"></script>
+	PAGE - MAP
 
-	<script src="js/lib/underscore-1.6.0.min.js"></script>
+---------------------------------------------------------------------------------------------------------------------------->
 
-	<script src="js/index.js"></script>
+
+	<div id="pageMap" class="container fill90">
+	
+		<div class="fill row">
+		
+			<div class="col-md-offset-1 col-md-10">
+				<nav id="floorSelectorNav" class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+					  <!-- Brand and toggle get grouped for better mobile display -->
+					  <div class="navbar-header">
+					    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#floorSelectorNav-collapse">
+					      <span class="sr-only">Toggle navigation</span>
+					      <!-- 
+					      <span class="icon-bar"></span>
+					      <span class="icon-bar"></span>
+					      <span class="icon-bar"></span>
+					       -->
+					      Plantas
+					    </button>
+					  </div>
+					
+					  <!-- Collect the nav links, forms, and other content for toggling -->
+					  <div class="collapse navbar-collapse" id="floorSelectorNav-collapse">
+						 <ul class="nav nav-justified">
+							<li><a id="btn_floorSelector_basement" href="javascript:mejorua.app.map.setFloor('basement')" class="btn btn-default" role="button">Sotano</a></li>
+							<li><a id="btn_floorSelector_ground" href="javascript:mejorua.app.map.setFloor('ground')" class="btn btn-default" role="button">Planta baja</a></li>
+							<li><a id="btn_floorSelector_first" href="javascript:mejorua.app.map.setFloor('first')" class="btn btn-default" role="button">Planta primera</a></li>
+							<li><a id="btn_floorSelector_second" href="javascript:mejorua.app.map.setFloor('second')" class="btn btn-default" role="button">Planta segunda</a></li>
+							<li><a id="btn_floorSelector_third" href="javascript:mejorua.app.map.setFloor('third')" class="btn btn-default" role="button">Planta tercera</a></li>
+							<li><a id="btn_floorSelector_fourth" href="javascript:mejorua.app.map.setFloor('fourth')" class="btn btn-default" role="button">Planta cuarta</a></li>
+						</ul>
+					  </div><!-- /.navbar-collapse -->
+					</div><!-- /.container-fluid -->
+				</nav>
+			</div><!-- /col -->
+		
+			<div class="fill90 col-md-offset-1 col-md-10">
+				<div id="map"class="fill"></div>
+			</div>
+			<!-- /col -->
+			
+			<div id="map_notifyIssue_controls" class="col-md-offset-1 col-md-10" style="display:none">
+			
+				<div class="btn-group btn-group-justified">
+					<a href="javascript:mejorua.app.map.setState('showIssues')" class="btn btn-danger" role="button">Cancelar</a>
+					<a href="javascript:mejorua.app.map.state.notifyIssue.confirm()" class="btn btn-success" role="button">Confirmar</a>
+				</div>
+		
+			</div><!-- /col -->
+		</div>
+		<!-- /row -->
+		
+	</div>
+	<!-- /container pageMap -->
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	PAGE - ISSUE DETAIL
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div id="pageIssueDetail" class="container" style="display:none">
+		<div class="row">
+			<div class="fill col-md-offset-1 col-md-10">
+
+				<div id="issueDetail_placeholder">
+
+				</div>
+
+			</div>
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+	<!-- /container pageMap -->
+
+	<!-- issueDetailsTemplate -->
+	<script id="issueDetailTemplate" type="text/x-handlebars-template">
+
+		<form id="{{viewId}}" class="issueDetail form-horizontal" role="form">
+
+			<div class="form-group">
+				<div class="col-sm-2">
+					<h2>Incidencia</h2>
+				</div>
+				<div class="col-sm-10">
+					<h2 id="issueDetailId">{{id}}</h2>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetailAction" class="col-sm-2 control-label">
+					Accion
+				</label>
+				<div class="col-sm-10">
+					<input id="issueDetailAction" type="text" disabled class="form-control disabled" placeholder="Acción a realizar en la incidencia" value="{{action}}">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetailTerm" class="col-sm-2 control-label">
+					Objetivo
+				</label>
+				<div class="col-sm-10">
+					<input id="issueDetailTerm" type="text" disabled class="form-control disabled" placeholder="Objetivo de la acción a realizar en la incidencia" value="{{term}}">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetailState" class="col-sm-2 control-label">
+					Estado
+				</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span id="issueDetailStateImg" class="input-group-addon {{viewStateCSS}}">
+							<img src="{{viewStateIcon}}">
+						</span>
+						<input id="issueDetailState" type="text" disabled class="form-control {{viewStateCSS}}" placeholder="Estado de la incidencia" value="{{viewStateText}}">
+					</div>
+				</div>
+			</div>
+
+			<!--
+			/*
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Test pending
+				</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span id="issueDetailStateImg" class="input-group-addon issueStatePendingBackground">
+							<img src="img/map/icon_pending.png">
+						</span>
+						<input id="issueDetailState" type="text" disabled class="form-control issueStatePendingBackground" placeholder="Estado de la incidencia" value="test">
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Test inProgress
+				</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span id="issueDetailStateImg" class="input-group-addon issueStateInProgressBackground">
+							<img src="img/map/icon_inProgress.png">
+						</span>
+						<input id="issueDetailState" type="text" disabled class="form-control issueStateInProgressBackground" placeholder="Estado de la incidencia">
+					</div>
+				</div>
+			</div>
+			*/
+			-->
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUASede" class="col-sm-2 control-label">
+					Sede
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUASede" class="form-control-static">{{SIGUASede.attributes.0.nombre}}</p>
+				</div>
+			</div>
+		
+			<div class="form-group">
+				<label for="issueDetail_SIGUAEdificio" class="col-sm-2 control-label">
+					Edificio
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAEdificio" class="form-control-static">{{SIGUAEdificio.attributes.0.nombre}}</p>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUAPlanta" class="col-sm-2 control-label">
+					Planta
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAPlanta" class="form-control-static">{{viewFloorName}}</p>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUAEstancia" class="col-sm-2 control-label">
+					Estancia
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAEstancia" class="form-control-static">{{SIGUAEstancia.attributes.denominacion}}</p>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="issueDetail_SIGUAActividad" class="col-sm-2 control-label">
+					Actividad
+				</label>
+				<div class="col-sm-10">
+					<p id="issueDetail_SIGUAActividad" class="form-control-static">{{SIGUAEstancia.attributes.nombre_actividad}}</p>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Lugar
+				</label>
+				<div class="col-sm-5">
+					<div class="input-group">
+						<span class="input-group-addon">Latitud</span>
+						<input id="issueDetailLatitude" type="text" disabled class="form-control" placeholder="Latitud de la incidencia" value="{{latitude}}">
+					</div>
+				</div>
+				<div class="col-sm-5">
+					<div class="input-group">
+						<span class="input-group-addon">Longitud</span>
+						<input id="issueDetailLongitude" type="text" disabled class="form-control" placeholder="Longitud de la incidencia" value="{{longitude}}">
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label">
+					Historial
+				</label>
+				<div class="col-sm-10">
+
+					{{#if events.length}}
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<td>
+									Fecha
+								</td>
+								<td>
+									Actividad
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							{{#events}}
+							<tr>
+								<td>
+									{{viewDate}}
+								</td>
+								<td class="{{viewBackgroundCSS}}">
+									{{viewType}}
+								</td>
+							</tr>
+							{{/events}}
+						</tbody>
+					</table>
+					{{else}}
+					<p class="form-control-static">Sin datos en el historial</p>
+					{{/if}}
+
+				</div>
+			</div>
+
+		</form>
+
+	</script>
+	<!-- issueDetailsTemplate - END -->
+
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	PAGE - NOTIFY ISSUE
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div id="pageNotifyIssue" class="container" style="display:none">
+		<div class="row">
+			<div class="fill col-md-offset-1 col-md-10">
+
+				<div id="notifyIssue_placeholder"></div>
+
+			</div>
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+	<!-- /container pageMap -->
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	REST CLIENT
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div id="pageRESTClient" class="container" style="display:none">
+		<div class="row">
+			<div class="col-md-offset-1 col-md-10">
+				<h1>DEBUG Controls</h1>
+				
+				<h2>API</h2>
+				
+				<div class="from-group">
+					<label for="RESTClient_customHost">Custom Host</label>
+					<input id="RESTClient_customHost" type="text" class="form-control" value="192.168.0.100" />
+
+					<a id="btn_RESTClient_setCustomHost" class="btn btn-success">Use custom host</a>
+					<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Phonegap preset</a>
+				</div>
+			
+				<h2>Issues bulk update</h2>
+				
+				<a href="javascript:mejorua.app.DEBUG.IssueCollection.bulkUpdateState('PENDING');"  class="btn btn-danger">State: Pending</a>
+				<a href="javascript:mejorua.app.DEBUG.IssueCollection.bulkUpdateState('INPROGRESS');"  class="btn btn-warning">State: In progress</a>
+				<a href="javascript:mejorua.app.DEBUG.IssueCollection.bulkUpdateState('DONE');"  class="btn btn-success">State: Done</a>
+				
+				<br>
+				<br>
+				<br>
+				<h1>Old stuff</h1>
+					
+				<h2>Cliente para MejorUA.api v1</h2>
+
+
+				<h3>API URL</h3>
+
+				<div class="from-group">
+					<label for="apiHost">Host</label>
+					<input id="apiHost" type="text" class="form-control" value="10.0.2.2" />
+
+					<a id="btn_setHostLocalhost" class="btn btn-success">Set localhost</a>
+					<a id="btn_setHostAndroidEmulatorHost" class="btn btn-success">Set 10.0.2.2</a>
+				</div>
+
+				<div class="from-group">
+					<label for="apiPort">Port</label>
+					<input id="apiPort" type="text" class="form-control" value="8080" />
+				</div>
+
+				<div class="from-group">
+					<label for="apiPath">Path to API</label>
+					<input id="apiPath" type="text" id="apiPath" class="form-control" value="api" />
+				</div>
+
+				<h3>Collection</h3>
+
+				<div class="form-group">
+					<label for="collection">Collección REST</label>
+					<input id="collection" type="text" class="form-control" placeholder="" value="incidencia" disabled>
+				</div>
+
+				<h3>Recuperar Incidencia</h3>
+
+				<form id="fGet" role="form">
+
+					<div class="form-group">
+						<label for="fGet_resourceId">Id Recurso REST</label>
+						<input id="fGet_resourceId" type="text" class="form-control" placeholder="" value="1">
+					</div>
+
+					<a id="fGet_submit" class="btn btn-default">Recuperar incidencia</a>
+				</form>
+
+				<p>Respuesta del API</p>
+
+				<pre id="fGet_response"></pre>
+				<h3>Crear/Modificar Incidencia</h3>
+
+				<form id="fPut" role="form">
+
+					<div class="form-group">
+						<label for="fPut_resourceId">Id</label>
+						<input id="fPut_resourceId" type="text" class="form-control" placeholder="" value="1">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_latitude">Latitud</label>
+						<input id="fPut_latitude" type="text" class="form-control" placeholder="Introduzca la latitud de la incidencia" value="2">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_longitude">Longitud</label>
+						<input id="fPut_longitude" type="text" class="form-control" placeholder="Introduzca la longitud de la incidencia" value="2">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_term">Término</label>
+						<input id="fPut_term" type="text" class="form-control" placeholder="Termino al que se refiere la incidencia" value="2">
+					</div>
+
+					<div class="form-group">
+						<label for="fPut_action">Acción</label>
+						<input id="fPut_action" type="text" class="form-control" placeholder="Acción a realizar sobre el término" value="2">
+					</div>
+
+					<a id="fPut_submit" class="btn btn-default">Crear/Modificar incidencia</a>
+				</form>
+
+				<p>Respuesta del API</p>
+				<textarea id="fPut_response"></textarea>
+			</div>
+			<!-- /col -->
+		</div>
+		<!-- /row -->
+	</div>
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	ATRIBUTIONS
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<div style="display:none">
+		<h1>Atributions</h1>
+
+		<div>
+			<h2>Map icon happy</h2>
+			Happy designed by
+			<a href="http://www.thenounproject.com/Julihan">Julien Deveaux</a>from the
+			<a href="http://www.thenounproject.com">Noun Project</a>
+		</div>
+
+	</div>
+	<!-- /container -->
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	JS EXTERNAL LIBS
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<script src="js/libs/jquery-1.11.0.min.js"></script>
+
+	<script src="js/libs/jquery-ui-1.8.24.effects.core.js"></script>
+	<script src="js/libs/jquery-ui-1.8.24.effects.slide.js"></script>
+
+	<script src="js/libs/bootstrap-3.1.1.min.js"></script>
+
+	<script src="js/libs/underscore-1.6.0.min.js"></script>
+
+	<script src="js/libs/backbone-1.1.2.min.js"></script>
+
+	<script src="js/libs/leaflet-0.7.3.js"></script>
+
+	<script src="js/libs/handlebars-1.3.0.js"></script>
+
+	<script src="js/libs/toastr-2.0.3.min.js"></script>
+
+	<!---------------------------------------------------------------------------------------------------------------------------
+
+	JS - MEJOR UA
+
+---------------------------------------------------------------------------------------------------------------------------->
+
+	<script src="js/models/SIGUA.js"></script>
+	<script src="js/models/Issue.js"></script>
+	<script src="js/models/IssueCollection.js"></script>
+	<script src="js/controllers/IssueDetailController.js"></script>	
+	<script src="js/views/IssueDetailView.js"></script>
+	<script src="js/controllers/NotifyIssueController.js"></script>	
+	<script src="js/util/Api.js"></script>
+	<script src="js/views/MapFloorSelector.js"></script>
+	<script src="js/Map.js"></script>
+	<script src="js/controllers/App.js"></script>
+	<script src="js/controllers/index.js"></script>
+
+	<!-- Page loaded after App & Index to bind onLoad of controllers state -->
+	<script src="js/controllers/Page.js"></script>
+
 
 </body>
+
 </html>

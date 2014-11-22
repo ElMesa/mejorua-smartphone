@@ -2,7 +2,7 @@ var mejorua = mejorua || {};
 mejorua.views = mejorua.views || {};
 
 (function() {
-    mejorua.views.IssueDetail = function IssueDetail(id, model) {
+    mejorua.views.IssueDetail = function IssueDetail(id, model, viewMode) {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
@@ -11,8 +11,9 @@ mejorua.views = mejorua.views || {};
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         var self = this;
         this.id = undefined;
-    	
     	this.model = undefined;
+        this.controller = undefined; //Set on controller.init(); Because view is first instantiated, then controller, wich calls init.
+        this.viewMode = undefined;
 
         this.templateId = undefined;
         this.template = undefined; //Handlebars template
@@ -61,12 +62,15 @@ mejorua.views = mejorua.views || {};
         /// METHODS
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.init = function init(id, model) {
+        this.init = function init(id, model, viewMode) {
+            if(viewMode == undefined) viewMode = "read";
             console.log("views.IssueDetail.init()");
 
             this.id = id;
             this.templateId = 'issueDetailTemplate';
             this.placeholderId = id + '_placeholder';
+
+            this.viewMode = viewMode;
             
             var templateSource = $('#' + this.templateId).html();
             this.template = Handlebars.compile(templateSource);
@@ -97,8 +101,22 @@ mejorua.views = mejorua.views || {};
             
             var templateData = $.extend({}, self.model.attributes, viewData);
 
+            if(!templateData.SIGUAEstancia.attributes.denominacion) templateData.SIGUAEstancia.attributes.denominacion = templateData.SIGUAEstancia.attributes.codigo;
+
+            if(this.viewMode == "read") {
+                templateData.inputsDisabledCSS = "disabled";
+                templateData.hideOnCreate = "";
+                templateData.hideOnRead = 'style="display:none"';
+            } else {
+                templateData.inputsDisabledCSS = "";
+                templateData.hideOnCreate = 'style="display:none"';
+                templateData.hideOnRead = "";
+            }
+
             var html = self.template(templateData);
             $('#' + self.placeholderId).html(html);
+
+            if(self.controller) self.attachEventHandlers();
         }
 
         this.formatEvents = function formatEvents(events) {
@@ -127,11 +145,26 @@ mejorua.views = mejorua.views || {};
         	return eventsViewData;
         }
 
+        this.setController = function setController(controller) {
+            this.controller = controller;
+            this.attachEventHandlers();
+        }
+
+        this.attachEventHandlers = function attachEventHandlers() {
+            $('#' + self.placeholderId + " .submit").click(this.onSubmit);
+        } 
+
+        this.onSubmit = function onSubmit() {
+            self.model.set('action', $('#' + self.id + "_issueDetailAction").val());
+            self.model.set('term', $('#' + self.id + "_issueDetailTerm").val());
+            self.controller.onNotifyIssueSubmit();
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
         /// SELF INITILIZATION
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.init(id, model);
+        this.init(id, model, viewMode);
     }
 })();

@@ -5,6 +5,10 @@
 #floorSelectorNav {
 	margin-bottom: 0px;
 }
+
+.leaflet-container a {
+	color: #000000;
+}
 /*
 #floorSelectorNav .container-fluid, #floorSelectorNav .collapse {
 	padding: 0px;

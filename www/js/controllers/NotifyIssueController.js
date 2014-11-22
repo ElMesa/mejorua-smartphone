@@ -2,7 +2,7 @@ var mejorua = mejorua || {};
 mejorua.controllers = mejorua.controllers || {};
 
 (function() {
-    mejorua.controllers.NotifyIssue = function NotifyIssue(model, view) {
+    mejorua.controllers.NotifyIssue = function NotifyIssue(issues, model, view) {
 
     	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
@@ -21,12 +21,19 @@ mejorua.controllers = mejorua.controllers || {};
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    	this.init = function init(model, view) {
+    	this.init = function init(issues, model, view) {
     		console.log("mejorua.controllers.NotifyIssue.init()");
 
     		this.view = view;
+            this.view.setController(this);
+            this.issues = issues;
     		this.model = model;
     	}
+
+        this.onNotifyIssueSubmit = function onNotifyIssueSubmit() {
+            console.log("mejorua.controllers.NotifyIssue.onNotifyIssueSubmit()");            
+            self.issues.create(self.model.attributes);
+        }
 
     	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
@@ -44,6 +51,6 @@ mejorua.controllers = mejorua.controllers || {};
         /// SELF INITILIZATION
         ///
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.init(model, view);
+        this.init(issues, model, view);
     }
 })();
